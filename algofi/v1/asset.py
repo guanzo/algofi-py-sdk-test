@@ -130,3 +130,11 @@ class Asset:
         """
         price = self.get_price()
         return amount * price / 10**self.get_underlying_asset_info()["decimals"]
+
+    def get_underlying_decimals(self):
+        """Returns decimals of asset
+
+        :return: decimals
+        :rtype: int
+        """
+        return self.underlying_asset_info['decimals']

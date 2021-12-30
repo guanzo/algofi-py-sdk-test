@@ -336,6 +336,14 @@ class Client:
         """
         return [market.get_market_app_id() for market in self.get_active_markets().values()]
 
+    def get_active_market_addresses(self):
+        """Returns the list of the active market addresses
+
+        :return: list of active market_addresses
+        :rtype: list
+        """
+        return [market.get_market_address() for market in self.get_active_markets().values()]
+
     # TRANSACTION BUILDERS
     
     def prepare_optin_transactions(self, storage_address, address=None):
