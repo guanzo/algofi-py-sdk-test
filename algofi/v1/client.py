@@ -94,7 +94,7 @@ class Client:
         if not address:
             address = self.user_address
         if address:
-            return self.algod.account_info(self.user_address)
+            return self.algod.account_info(address)
         else:
             raise Exception("user_address has not been specified")
     
@@ -125,7 +125,7 @@ class Client:
         """
         if not address:
             address = self.user_address
-        user_info = get_user_info(address)
+        user_info = self.get_user_info(address)
         return asset_id in [x['asset-id'] for x in user_info['assets']]
     
     def get_user_balances(self, address=None):
