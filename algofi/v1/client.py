@@ -94,9 +94,7 @@ class Client:
         if not address:
             address = self.user_address
         if address:
-            user_info = self.algod.account_info(self.user_address)
-            self.user_info = user_info
-            return user_info
+            return self.algod.account_info(self.user_address)
         else:
             raise Exception("user_address has not been specified")
     
@@ -112,8 +110,8 @@ class Client:
         """
         if not address:
             address = self.user_address
-        self.get_user_info(address)
-        return app_id in [x['id'] for x in self.user_info['apps-local-state']]
+        user_info = self.get_user_info(address)
+        return app_id in [x['id'] for x in user_info['apps-local-state']]
     
     def is_opted_into_asset(self, asset_id, address=None):
         """Returns a boolean if the user address is opted into an asset with id asset_id
@@ -127,10 +125,25 @@ class Client:
         """
         if not address:
             address = self.user_address
-        self.get_user_info(address)
-        return asset_id in [x['asset-id'] for x in self.user_info['assets']]
+        user_info = get_user_info(address)
+        return asset_id in [x['asset-id'] for x in user_info['assets']]
     
-    def get_user_balance(self, asset_id=None, address=None):
+    def get_user_balances(self, address=None):
+        """Returns a dictionary of user balances by asset id
+
+        :param address: address to get info for
+        :type address: string
+        :return: amount of asset
+        :rtype: int
+        """
+        if not address:
+            address = self.user_address
+        user_info = self.get_user_info(address)
+        balances = {asset["asset-id"] : asset["amount"] for asset in user_info["assets"]}
+        balances[1] = user_info["amount"]
+        return balances
+    
+    def get_user_balance(self, asset_id=1, address=None):
         """Returns a amount of asset in user's balance with asset id asset_id
 
         :param address: address to get info for
@@ -142,18 +155,7 @@ class Client:
         """
         if not address:
             address = self.user_address
-        self.get_user_info(address)
-        if asset_id:
-            if asset_id == 1:
-                return self.user_info['amount']
-            else:
-                asset = list(filter(lambda x: x['asset-id'] == asset_id, self.user_info['assets']))
-                if asset:
-                    return asset[0]['amount']
-                else:
-                    return 0
-        else:
-            return self.user_info['amount']
+        return self.get_user_balances(address).get(asset_id, 0)
     
     def get_user_state(self, address=None):
         """Returns a dictionary with the lending market state for a given address (must be opted in)
@@ -168,6 +170,22 @@ class Client:
             address = self.user_address
         result["manager"] = self.manager.get_user_state(address)
         storage_address = self.manager.get_storage_address(address)
+        for symbol in self.active_ordered_symbols:
+            result[symbol] = self.markets[symbol].get_storage_state(storage_address)
+        return result
+    
+    def get_storage_state(self, storage_address=None):
+        """Returns a dictionary with the lending market state for a given storage address
+
+        :param storage_address: address to get info for. If None will use address supplied when creating client
+        :type storage_address: string
+        :return: state
+        :rtype: dict
+        """
+        result = {}
+        if not storage_address:
+            storage_address = self.manager.get_storage_address(self.user_address)
+        result["manager"] = self.manager.get_storage_state(storage_address)
         for symbol in self.active_ordered_symbols:
             result[symbol] = self.markets[symbol].get_storage_state(storage_address)
         return result
@@ -284,8 +302,16 @@ class Client:
         """
         return self.active_ordered_symbols
 
+    def get_raw_prices(self):
+        """Returns a dictionary of raw oracle prices of the active assets pulled from their oracles
+
+        :return: dictionary of int prices
+        :rtype: dict
+        """
+        return {symbol : market.get_asset_info().get_raw_price() for symbol, market in self.get_active_markets().items()}
+
     def get_prices(self):
-        """Returns a dictionary of prices of the active assets pulled from their oracles
+        """Returns a dictionary of dollarized float prices of the active assets pulled from their oracles
 
         :return: dictionary of int prices
         :rtype: dict
