@@ -153,6 +153,22 @@ class Market:
         """
         return self.total_borrow_interest_rate
     
+    def get_collateral_factor(self):
+        """Returns collateral_factor for this market
+
+        :return: collateral_factor
+        :rtype: int
+        """
+        return self.collateral_factor
+
+    def get_liquidation_incentive(self):
+        """Returns liquidation_incentive for this market
+
+        :return: liquidation_incentive
+        :rtype: int
+        """
+        return self.liquidation_incentive
+
     # USER FUNCTIONS
     
     def get_storage_state(self, storage_address):
