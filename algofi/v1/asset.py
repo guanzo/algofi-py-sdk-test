@@ -108,3 +108,11 @@ class Asset:
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
         return get_global_state(self.algod, self.oracle_app_id)[self.oracle_price_field]
+
+    def get_underlying_decimals(self):
+        """Returns decimals of asset
+
+        :return: decimals
+        :rtype: int
+        """
+        return self.underlying_asset_info['decimals']
