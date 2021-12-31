@@ -239,32 +239,32 @@ def get_ordered_symbols(chain, max=False, max_atomic_opt_in=False):
         return json_file['SYMBOLS'][:supported_market_count]
 
 
-def get_manager_info(chain):
+def get_manager_app_id(chain):
     """Returns app id of manager for the specified chain. Pulled from hardcoded values in contracts.json.
 
     :param chain: network to query data for
     :type chain: string e.g. 'testnet'
-    :return: dict of manager app id
-    :rtype: dict
+    :return: manager app id
+    :rtype: int
     """
     with open(CONTRACTS_FPATH, 'r') as contracts_file:
         json_file = json.load(contracts_file)[chain]
-        return {'manager_app_id': json_file['managerAppId']}
+        return json_file['managerAppId']
 
 
-def get_market_info(chain, symbol):
-    """Returns information of symbol for the specified chain. Pulled from hardcoded values in contracts.json.
+def get_market_app_id(chain, symbol):
+    """Returns market app id of symbol for the specified chain. Pulled from hardcoded values in contracts.json.
 
     :param chain: network to query data for
     :type chain: string e.g. 'testnet'
     :param symbol: symbol to get market data for
     :type symbol: string e.g. 'ALGO'
-    :return: dict of market app id, oracle app id, oracle field name, asset id, bank asset id
-    :rtype: dict
+    :return: =market app id
+    :rtype: int
     """
     with open(CONTRACTS_FPATH, 'r') as contracts_file:
         json_file = json.load(contracts_file)[chain]
-        return json_file['SYMBOL_INFO'][symbol]
+        return json_file['SYMBOL_INFO'][symbol]["marketAppId"]
 
 def get_init_round(chain):
     """Returns init round of algofi protocol for a specified chain. Pulled from hardcoded values in contracts.json.

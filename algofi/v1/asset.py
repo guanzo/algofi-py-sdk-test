@@ -137,4 +137,4 @@ class Asset:
         :rtype: float
         """
         price = self.get_price()
-        return amount * price / 10**self.get_underlying_decimals()
+        return float(amount * price / (10**self.get_underlying_decimals()))

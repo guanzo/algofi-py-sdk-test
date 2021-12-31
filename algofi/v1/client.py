@@ -5,7 +5,7 @@ from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
 from algosdk.error import AlgodHTTPError
 from ..utils import read_local_state, read_global_state, wait_for_confirmation, get_ordered_symbols, \
-get_manager_info, get_market_info, get_init_round, get_staking_contracts
+get_manager_app_id, get_market_app_id, get_init_round, get_staking_contracts
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
@@ -60,12 +60,10 @@ class Client:
         self.max_atomic_opt_in_ordered_symbols = get_ordered_symbols(self.chain, max_atomic_opt_in=True)
         
         # manager info
-        self.manager_info = get_manager_info(self.chain)
-        self.manager = Manager(self.algod, self.manager_info)
+        self.manager = Manager(self.algod, get_manager_app_id(self.chain))
         
         # market info
-        self.market_info = dict(zip(self.max_ordered_symbols, [get_market_info(self.chain, symbol) for symbol in self.max_ordered_symbols]))
-        self.markets = {symbol : Market(self.algod, self.market_info[symbol]) for symbol in self.market_info.keys()}
+        self.markets = {symbol : Market(self.algod, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
         
         # staking contract info
         self.staking_contract_info = get_staking_contracts(self.chain)
@@ -318,6 +316,30 @@ class Client:
         """
         return {symbol : market.get_asset().get_price() for symbol, market in self.get_active_markets().items()}
 
+    # INDEXER HELPERS
+
+    def get_storage_accounts(self, staking_contract_name=None):
+        """Returns a list of storage accounts for the given manager app id
+
+        :return: list of storage accounts
+        :rtype: list
+        """
+        next_page = ""
+        accounts = []
+        if staking_contract_name is None:
+            app_id = self.get_active_markets()[0].get_market_app_id()
+        else:
+            app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
+        while next_page is not None:
+            print(next_page)
+            account_data = self.indexer.accounts(next_page=next_page, application_id=app_id)
+            accounts.extend([account["address"] for account in account_data["accounts"]])
+            if "next-token" in account_data:
+                next_page = account_data["next-token"]
+            else:
+                next_page = None
+        return accounts
+
     # TRANSACTION HELPERS
     
     def get_active_oracle_app_ids(self):
@@ -459,7 +481,7 @@ class Client:
                                                   self.manager.get_manager_app_id(),
                                                   self.get_active_market_app_ids(),
                                                   self.get_active_oracle_app_ids(),
-                                                  self.manager.get_rewards_asset_ids())
+                                                  self.manager.get_rewards_program().get_rewards_asset_ids())
 
     def prepare_liquidate_transactions(self, target_storage_address, borrow_symbol, amount, collateral_symbol, address=None):
         """Returns a liquidate transaction group
@@ -718,7 +740,7 @@ class Client:
                                                           staking_contract.get_manager_app_id(),
                                                           staking_contract.get_market_app_id(),
                                                           staking_contract.get_oracle_app_id(),
-                                                          staking_contract.get_rewards_asset_ids())
+                                                          staking_contract.get_rewards_program().get_rewards_asset_ids())
 
     # TRANSACTION SUBMITTER
 

@@ -40,3 +40,11 @@ asset
    :members:
    :undoc-members:
    :show-inheritance:
+
+rewards\_program
+-----------------------
+
+.. automodule:: algofi.v1.rewards_program
+   :members:
+   :undoc-members:
+   :show-inheritance:
