@@ -82,7 +82,7 @@ class Manager:
         :rtype: dict
         """
         storage_address = self.get_storage_address(address)
-        return get_storage_state(storage_address)
+        return self.get_storage_state(storage_address)
     
     def get_storage_state(self, storage_address):
         """Returns the market local state for storage address.
