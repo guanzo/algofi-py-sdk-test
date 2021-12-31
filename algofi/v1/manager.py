@@ -5,20 +5,21 @@ from algosdk.v2client.algod import AlgodClient
 from ..utils import read_local_state, get_global_state, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
+from .rewards_program import RewardsProgram
 
 class Manager:
-    def __init__(self, algod_client: AlgodClient, manager_info):
+    def __init__(self, algod_client: AlgodClient, manager_app_id):
         """Constructor method for manager object.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        :param manager_info: dictionary of manager information
-        :type manager_info: dict
+        :param manager_app_id: manager app id
+        :type manager_app_id: int
         """
 
         self.algod = algod_client
 
-        self.manager_app_id = manager_info.get("manager_app_id")
+        self.manager_app_id = manager_app_id
         self.manager_address = logic.get_application_address(self.manager_app_id)
         
         # read market global state
@@ -28,12 +29,7 @@ class Manager:
         """Method to fetch most recent manager global state.
         """
         manager_state = get_global_state(self.algod, self.manager_app_id)
-        self.rewards_program_number = manager_state.get(manager_strings.n_rewards_programs, 0)
-        self.rewards_amount = manager_state.get(manager_strings.rewards_amount, 0)
-        self.rewards_per_second = manager_state.get(manager_strings.rewards_per_second, 0)
-        self.rewards_asset_id = manager_state.get(manager_strings.rewards_asset_id, 0)
-        self.rewards_secondary_ratio = manager_state.get(manager_strings.rewards_secondary_ratio, 0)
-        self.rewards_secondary_asset_id = manager_state.get(manager_strings.rewards_secondary_asset_id, 0)
+        self.rewards_program = RewardsProgram(self.algod, manager_state)
     
     # GETTERS
     
@@ -53,18 +49,13 @@ class Manager:
         """
         return self.manager_address
 
-    def get_rewards_asset_ids(self):
-        """Return a list of current rewards assets
-
-        :return: rewards asset list
-        :rtype: list
+    def get_rewards_program(self):
+        """Return a list of current rewards program
+        
+        :return: rewards program
+        :rtype: :class:`RewardsProgram
         """
-        result = []
-        if self.rewards_asset_id > 1:
-            result.append(self.rewards_asset_id)
-        if self.rewards_secondary_asset_id > 1:
-            result.append(self.rewards_secondary_asset_id)
-        return result
+        return self.rewards_program
 
     # USER FUNCTIONS
     
@@ -90,7 +81,6 @@ class Manager:
         :return: market local state for address
         :rtype: dict
         """
-        result = {}
         storage_address = self.get_storage_address(address)
         return get_storage_state(storage_address)
     
@@ -107,3 +97,20 @@ class Manager:
         result["user_global_max_borrow_in_dollars"] = user_state.get(manager_strings.user_global_max_borrow_in_dollars, 0) 
         result["user_global_borrowed_in_dollars"] = user_state.get(manager_strings.user_global_borrowed_in_dollars, 0)
         return result
+    
+    def get_user_unrealized_rewards(self, address, markets):
+        """Returns projected unrealzed rewards for a user address
+        
+        :return: tuple of primary and secondary unrealized rewards
+        :rtype: (int, int)
+        """
+        storage_address = self.get_storage_address(address)
+        return self.get_storage_unrealized_rewards(storage_address, markets)
+
+    def get_storage_unrealized_rewards(self, storage_address, markets):
+        """Returns preojected unrealized rewards for a storage address
+        
+        :return: tuple of primary and secondary unrealized rewards
+        :rtype: (int, int)
+        """
+        return self.get_rewards_program().get_storage_unrealized_rewards(storage_address, self, markets)

@@ -9,22 +9,19 @@ from .asset import Asset
 
 class Market:
 
-    def __init__(self, algod_client: AlgodClient, market_info):
+    def __init__(self, algod_client: AlgodClient, market_app_id):
         """Constructor method for the market object.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        :param market_info: dictionary of market information
-        :type market_info: dict
+        :param market_app_id: market app id
+        :type market_app_id: int
         """
 
         self.algod = algod_client
 
-        self.market_app_id = market_info.get("marketAppId")
+        self.market_app_id = market_app_id
         self.market_address = logic.get_application_address(self.market_app_id)
-
-        self.underlying_asset_id = market_info.get("underlyingAssetId", None)
-        self.bank_asset_id = market_info.get("bankAssetId", None)
 
         # read market global state
         self.update_global_state()
@@ -33,6 +30,13 @@ class Market:
         """Method to fetch most recent market global state.
         """
         market_state = get_global_state(self.algod, self.market_app_id)
+        # market constants
+        self.market_counter = market_state[market_strings.manager_market_counter_var]
+        
+        # market asset info
+        self.underlying_asset_id = market_state.get(market_strings.asset_id, None)
+        self.bank_asset_id = market_state.get(market_strings.bank_asset_id, None)
+        
         # market parameters
         self.oracle_app_id = market_state.get(market_strings.oracle_app_id, None)
         self.oracle_price_field = market_state.get(market_strings.oracle_price_field, None)
@@ -80,6 +84,14 @@ class Market:
         :rtype: string
         """
         return self.market_address
+    
+    def get_market_counter(self):
+        """Returns the market counter for this market
+        
+        :return: market counter
+        :rtype: int
+        """
+        return self.market_counter
     
     def get_asset(self):
         """Returns asset object for this market
