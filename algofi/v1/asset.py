@@ -109,6 +109,14 @@ class Asset:
             raise Exception("no oracle app id for asset")
         return get_global_state(self.algod, self.oracle_app_id)[self.oracle_price_field]
     
+    def get_underlying_decimals(self):
+        """Returns decimals of asset
+
+        :return: decimals
+        :rtype: int
+        """
+        return self.underlying_asset_info['decimals']
+    
     def get_price(self):
         """Returns the current oracle price
 
@@ -118,7 +126,7 @@ class Asset:
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
         raw_price = self.get_raw_price()
-        return float((raw_price * 10**self.get_underlying_asset_info()["decimals"]) / (self.get_oracle_price_scale_factor() * 1e3))
+        return float((raw_price * 10**self.get_underlying_decimals()) / (self.get_oracle_price_scale_factor() * 1e3))
     
     def to_usd(self, amount):
         """Return the usd value of the underlying amount (base units)
@@ -129,12 +137,4 @@ class Asset:
         :rtype: float
         """
         price = self.get_price()
-        return amount * price / 10**self.get_underlying_asset_info()["decimals"]
-
-    def get_underlying_decimals(self):
-        """Returns decimals of asset
-
-        :return: decimals
-        :rtype: int
-        """
-        return self.underlying_asset_info['decimals']
+        return amount * price / 10**self.get_underlying_decimals()
