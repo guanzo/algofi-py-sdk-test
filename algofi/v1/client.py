@@ -320,24 +320,24 @@ class Client:
 
     def get_storage_accounts(self, staking_contract_name=None):
         """Returns a list of storage accounts for the given manager app id
+
+        :return: list of storage accounts
+        :rtype: list
         """
         next_page = ""
         accounts = []
         if staking_contract_name is None:
-            app_id = self.get_manager().get_manager_app_id()
+            app_id = self.get_active_markets()[0].get_market_app_id()
         else:
             app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
         while next_page is not None:
-            transaction_data = indexer.search_transactions(next_page=next_page,
-                                                           txn_type="appl",
-                                                           application_id=app_id,
-                                                           rekey_to=True)
-            transactions = list(filter(lambda txn: txn["application-transaction"]["on-completion"] == "optin", transaction_data["transactions"]))
-            accounts.extend([txn["sender"] for txn in transactions])
-            if "next-token" in transaction_data:
-                nextpage = transaction_data["next-token"]
+            print(next_page)
+            account_data = self.indexer.accounts(next_page=next_page, application_id=app_id)
+            accounts.extend([account["address"] for account in account_data["accounts"]])
+            if "next-token" in account_data:
+                next_page = account_data["next-token"]
             else:
-                nextpage = None
+                next_page = None
         return accounts
 
     # TRANSACTION HELPERS
