@@ -59,7 +59,7 @@ class StakingContract:
 
     # GETTERS
 
-    def get_asset_info(self):
+    def get_asset(self):
         """Returns asset object for this market
 
         :return: asset

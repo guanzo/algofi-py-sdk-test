@@ -81,7 +81,7 @@ class Market:
         """
         return self.market_address
     
-    def get_asset_info(self):
+    def get_asset(self):
         """Returns asset object for this market
 
         :return: asset
@@ -181,13 +181,13 @@ class Market:
         """
         result = {}
         user_state = read_local_state(self.algod, storage_address, self.market_app_id)
-        asset_info = self.get_asset_info()
+        asset = self.get_asset()
         result["active_collateral_bank"] = user_state.get(market_strings.user_active_collateral, 0)
         result["active_collateral_underlying"] = int(result["active_collateral_bank"] * self.bank_to_underlying_exchange / SCALE_FACTOR)
-        result["active_collateral_usd"] = asset_info.to_usd(result["active_collateral_underlying"])
+        result["active_collateral_usd"] = asset.to_usd(result["active_collateral_underlying"])
         result["active_collateral_max_borrow_usd"] = result["active_collateral_usd"] * self.collateral_factor / PARAMETER_SCALE_FACTOR
         result["borrow_shares"] = user_state.get(market_strings.user_borrow_shares, 0)
         result["borrow_underlying"] = int(self.underlying_borrowed * result["borrow_shares"] / self.outstanding_borrow_shares)
-        result["borrow_usd"] = asset_info.to_usd(result["borrow_underlying"])
+        result["borrow_usd"] = asset.to_usd(result["borrow_underlying"])
 
         return result
