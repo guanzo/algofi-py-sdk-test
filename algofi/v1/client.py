@@ -251,7 +251,7 @@ class Client:
         """
         return self.staking_contracts
 
-    def get_asset_info(self, symbol):
+    def get_asset(self, symbol):
         """Returns the asset object for the requested symbol.
 
         :param symbol: symbol of the asset
@@ -261,7 +261,7 @@ class Client:
         """
         if symbol not in self.active_ordered_symbols:
             raise Exception("Unsupported asset")
-        return self.markets[symbol].get_asset_info()
+        return self.markets[symbol].get_asset()
 
     def get_max_atomic_opt_in_market_app_ids(self):
         """Returns the max opt in market application ids.
@@ -276,7 +276,7 @@ class Client:
         
         :return: dictionary of asset objects
         """
-        return {symbol : market.get_asset_info() for symbol, market in self.get_active_markets().items()}
+        return {symbol : market.get_asset() for symbol, market in self.get_active_markets().items()}
     
     def get_active_asset_ids(self):
         """Returns the active asset ids.
@@ -308,7 +308,7 @@ class Client:
         :return: dictionary of int prices
         :rtype: dict
         """
-        return {symbol : market.get_asset_info().get_raw_price() for symbol, market in self.get_active_markets().items()}
+        return {symbol : market.get_asset().get_raw_price() for symbol, market in self.get_active_markets().items()}
 
     def get_prices(self):
         """Returns a dictionary of dollarized float prices of the active assets pulled from their oracles
@@ -316,7 +316,7 @@ class Client:
         :return: dictionary of int prices
         :rtype: dict
         """
-        return {symbol : market.get_asset_info().get_price() for symbol, market in self.get_active_markets().items()}
+        return {symbol : market.get_asset().get_price() for symbol, market in self.get_active_markets().items()}
 
     # TRANSACTION HELPERS
     
@@ -326,7 +326,7 @@ class Client:
         :return: list of active oracle app ids
         :rtype: list
         """
-        return [market.get_asset_info().get_oracle_app_id() for market in self.get_active_markets().values()]
+        return [market.get_asset().get_oracle_app_id() for market in self.get_active_markets().values()]
         
     def get_active_market_app_ids(self):
         """Returns the list of the active market app ids
@@ -383,7 +383,7 @@ class Client:
                                                    self.get_default_params(),
                                                    self.manager.get_storage_address(address),
                                                    amount,
-                                                   market.get_asset_info().get_bank_asset_id(),
+                                                   market.get_asset().get_bank_asset_id(),
                                                    self.manager.get_manager_app_id(),
                                                    market.get_market_app_id(),
                                                    market.get_market_address(),
@@ -409,7 +409,7 @@ class Client:
                                            self.get_default_params(),
                                            self.manager.get_storage_address(address),
                                            amount,
-                                           market.get_asset_info().get_underlying_asset_id(),
+                                           market.get_asset().get_underlying_asset_id(),
                                            self.manager.get_manager_app_id(),
                                            market.get_market_app_id(),
                                            self.get_active_market_app_ids(),
@@ -435,8 +435,8 @@ class Client:
                                          self.get_default_params(),
                                          self.manager.get_storage_address(address),
                                          amount,
-                                         market.get_asset_info().get_underlying_asset_id(),
-                                         market.get_asset_info().get_bank_asset_id(),
+                                         market.get_asset().get_underlying_asset_id(),
+                                         market.get_asset().get_bank_asset_id(),
                                          self.manager.get_manager_app_id(),
                                          market.get_market_app_id(),
                                          market.get_market_address(),
@@ -492,8 +492,8 @@ class Client:
                                               collateral_market.get_market_app_id(),
                                               self.get_active_market_app_ids(),
                                               self.get_active_oracle_app_ids(),
-                                              collateral_market.get_asset_info().get_bank_asset_id(),
-                                              borrow_market.get_asset_info().get_underlying_asset_id() if borrow_symbol != "ALGO" else None)
+                                              collateral_market.get_asset().get_bank_asset_id(),
+                                              borrow_market.get_asset().get_underlying_asset_id() if borrow_symbol != "ALGO" else None)
 
     def prepare_mint_transactions(self, symbol, amount, address=None):
         """Returns a mint transaction group
@@ -514,13 +514,13 @@ class Client:
                                          self.get_default_params(),
                                          self.manager.get_storage_address(address),
                                          amount,
-                                         market.get_asset_info().get_bank_asset_id(),
+                                         market.get_asset().get_bank_asset_id(),
                                          self.manager.get_manager_app_id(),
                                          market.get_market_app_id(),
                                          market.get_market_address(),
                                          self.get_active_market_app_ids(),
                                          self.get_active_oracle_app_ids(),
-                                         market.get_asset_info().get_underlying_asset_id() if symbol != "ALGO" else None)
+                                         market.get_asset().get_underlying_asset_id() if symbol != "ALGO" else None)
 
     def prepare_mint_to_collateral_transactions(self, symbol, amount, address=None):
         """Returns a mint_to_collateral transaction group
@@ -546,7 +546,7 @@ class Client:
                                                        market.get_market_address(),
                                                        self.get_active_market_app_ids(),
                                                        self.get_active_oracle_app_ids(),
-                                                       market.get_asset_info().get_underlying_asset_id() if symbol != "ALGO" else None)
+                                                       market.get_asset().get_underlying_asset_id() if symbol != "ALGO" else None)
 
     def prepare_remove_collateral_transactions(self, symbol, amount, address=None):
         """Returns a remove_collateral transaction group
@@ -567,7 +567,7 @@ class Client:
                                                       self.get_default_params(),
                                                       self.manager.get_storage_address(address),
                                                       amount,
-                                                      market.get_asset_info().get_bank_asset_id(),
+                                                      market.get_asset().get_bank_asset_id(),
                                                       self.manager.get_manager_app_id(),
                                                       market.get_market_app_id(),
                                                       self.get_active_market_app_ids(),
@@ -592,7 +592,7 @@ class Client:
                                                                  self.get_default_params(),
                                                                  self.manager.get_storage_address(address),
                                                                  amount,
-                                                                 market.get_asset_info().get_underlying_asset_id(),
+                                                                 market.get_asset().get_underlying_asset_id(),
                                                                  self.manager.get_manager_app_id(),
                                                                  market.get_market_app_id(),
                                                                  self.get_active_market_app_ids(),
@@ -622,7 +622,7 @@ class Client:
                                                  market.get_market_address(),
                                                  self.get_active_market_app_ids(),
                                                  self.get_active_oracle_app_ids(),
-                                                 market.get_asset_info().get_underlying_asset_id() if symbol != "ALGO" else None)
+                                                 market.get_asset().get_underlying_asset_id() if symbol != "ALGO" else None)
 
     # STAKING TRANSACTION BUILDERS
     
@@ -662,7 +662,7 @@ class Client:
         if not address:
             address = self.user_address
         staking_contract = self.get_staking_contract(staking_contract_name)
-        asset_id = staking_contract.get_asset_info().get_underlying_asset_id()
+        asset_id = staking_contract.get_asset().get_underlying_asset_id()
         return prepare_stake_transactions(address,
                                           self.get_default_params(),
                                           staking_contract.get_storage_address(address),
@@ -688,7 +688,7 @@ class Client:
         if not address:
             address = self.user_address
         staking_contract = self.get_staking_contract(staking_contract_name)
-        asset_id = staking_contract.get_asset_info().get_underlying_asset_id()
+        asset_id = staking_contract.get_asset().get_underlying_asset_id()
         return prepare_unstake_transactions(address,
                                             self.get_default_params(),
                                             staking_contract.get_storage_address(address),
@@ -711,7 +711,7 @@ class Client:
         if not address:
             address = self.user_address
         staking_contract = self.get_staking_contract(staking_contract_name)
-        asset_id = staking_contract.get_asset_info().get_underlying_asset_id()
+        asset_id = staking_contract.get_asset().get_underlying_asset_id()
         return prepare_claim_staking_rewards_transactions(address,
                                                           self.get_default_params(),
                                                           staking_contract.get_storage_address(address),
