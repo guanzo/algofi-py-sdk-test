@@ -481,7 +481,7 @@ class Client:
                                                   self.manager.get_manager_app_id(),
                                                   self.get_active_market_app_ids(),
                                                   self.get_active_oracle_app_ids(),
-                                                  self.manager.get_rewards_program.get_rewards_asset_ids())
+                                                  self.manager.get_rewards_program().get_rewards_asset_ids())
 
     def prepare_liquidate_transactions(self, target_storage_address, borrow_symbol, amount, collateral_symbol, address=None):
         """Returns a liquidate transaction group
@@ -740,7 +740,7 @@ class Client:
                                                           staking_contract.get_manager_app_id(),
                                                           staking_contract.get_market_app_id(),
                                                           staking_contract.get_oracle_app_id(),
-                                                          staking_contract.get_rewards_program.get_rewards_asset_ids())
+                                                          staking_contract.get_rewards_program().get_rewards_asset_ids())
 
     # TRANSACTION SUBMITTER
 
