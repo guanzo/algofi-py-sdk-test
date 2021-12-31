@@ -92,6 +92,17 @@ class Manager:
         """
         result = {}
         storage_address = self.get_storage_address(address)
+        return get_storage_state(storage_address)
+    
+    def get_storage_state(self, storage_address):
+        """Returns the market local state for storage address.
+
+        :param storage_address: storage_address to get info for
+        :type storage_address: string
+        :return: market local state for address
+        :rtype: dict
+        """
+        result = {}
         user_state = read_local_state(self.algod, storage_address, self.manager_app_id)
         result["user_global_max_borrow_in_dollars"] = user_state.get(manager_strings.user_global_max_borrow_in_dollars, 0) 
         result["user_global_borrowed_in_dollars"] = user_state.get(manager_strings.user_global_borrowed_in_dollars, 0)

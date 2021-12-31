@@ -2,7 +2,7 @@ import json
 import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR
+from ..utils import read_local_state, get_global_state, SCALE_FACTOR, PARAMETER_SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .asset import Asset
@@ -181,9 +181,13 @@ class Market:
         """
         result = {}
         user_state = read_local_state(self.algod, storage_address, self.market_app_id)
+        asset_info = self.get_asset_info()
         result["active_collateral_bank"] = user_state.get(market_strings.user_active_collateral, 0)
         result["active_collateral_underlying"] = int(result["active_collateral_bank"] * self.bank_to_underlying_exchange / SCALE_FACTOR)
+        result["active_collateral_usd"] = asset_info.to_usd(result["active_collateral_underlying"])
+        result["active_collateral_max_borrow_usd"] = result["active_collateral_usd"] * self.collateral_factor / PARAMETER_SCALE_FACTOR
         result["borrow_shares"] = user_state.get(market_strings.user_borrow_shares, 0)
         result["borrow_underlying"] = int(self.underlying_borrowed * result["borrow_shares"] / self.outstanding_borrow_shares)
-        
+        result["borrow_usd"] = asset_info.to_usd(result["borrow_underlying"])
+
         return result
