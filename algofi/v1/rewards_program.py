@@ -129,7 +129,7 @@ class RewardsProgram:
             coefficient = manager_state.get(market_counter_prefix+manager_strings.counter_indexed_rewards_coefficient, 0)
             user_coefficient = manager_storage_state.get(market_counter_prefix+manager_strings.counter_to_user_rewards_coefficient_initial) if on_current_program else 0
             
-            market_underlying_tvl = market.get_underlying_borrowed() + market.get_active_collateral()
+            market_underlying_tvl = market.get_underlying_borrowed() + (market.get_active_collateral() * market.get_bank_to_underlying_exchange() / SCALE_FACTOR)
             projected_coefficient = coefficient + int(rewards_issued
                                                       * REWARDS_SCALE_FACTOR
                                                       * market.get_asset().to_usd(market.get_underlying_borrowed())
