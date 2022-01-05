@@ -10,15 +10,15 @@ from .asset import Asset
 
 class Market:
 
-    def __init__(self, algod_client: AlgodClient, market_app_id, historical_indexer_client: IndexerClient):
+    def __init__(self, algod_client: AlgodClient, historical_indexer_client: IndexerClient, market_app_id):
         """Constructor method for the market object.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        :param market_app_id: market app id
-        :type market_app_id: int
         :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
         :type historical_indexer_client: :class:`IndexerClient`
+        :param market_app_id: market app id
+        :type market_app_id: int
         """
 
         self.algod = algod_client

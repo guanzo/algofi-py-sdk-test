@@ -11,15 +11,15 @@ from .manager import Manager
 from .market import Market
 
 class StakingContract:
-    def __init__(self, algod_client: AlgodClient, staking_contract_info, historical_indexer_client: IndexerClient):
+    def __init__(self, algod_client: AlgodClient, historical_indexer_client: IndexerClient, staking_contract_info):
         """Constructor method for the generic client.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        :param staking_contract_info: dictionary of staking contract information
-        :type staking_contract_info: dict
         :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
         :type historical_indexer_client: :class:`IndexerClient`
+        :param staking_contract_info: dictionary of staking contract information
+        :type staking_contract_info: dict
         """
 
         self.algod = algod_client
