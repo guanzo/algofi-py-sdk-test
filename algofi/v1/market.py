@@ -2,23 +2,27 @@ import json
 import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR, PARAMETER_SCALE_FACTOR
+from algosdk.v2client.indexer import IndexerClient
+from ..utils import read_local_state, get_global_state, SCALE_FACTOR, PARAMETER_SCALE_FACTOR, search_global_state
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .asset import Asset
 
 class Market:
 
-    def __init__(self, algod_client: AlgodClient, market_app_id):
+    def __init__(self, algod_client: AlgodClient, market_app_id, historical_indexer_client: IndexerClient):
         """Constructor method for the market object.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
         :param market_app_id: market app id
         :type market_app_id: int
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         """
 
         self.algod = algod_client
+        self.historical_indexer = historical_indexer_client
 
         self.market_app_id = market_app_id
         self.market_address = logic.get_application_address(self.market_app_id)
@@ -125,13 +129,22 @@ class Market:
         """
         return self.bank_to_underlying_exchange
 
-    def get_underlying_borrowed(self):
+    def get_underlying_borrowed(self, block=None):
         """Returns underlying_borrowed for this market
 
         :return: underlying_borrowed
         :rtype: int
         """
-        return self.underlying_borrowed
+        if block:
+            try:
+                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
+                data = data["application"]["params"]["global-state"]
+                return search_global_state(data, market_strings.underlying_borrowed)
+            except:
+                raise Exception("Issue getting data")
+            
+        else:
+            return self.underlying_borrowed
 
     def get_outstanding_borrow_shares(self):
         """Returns outstanding_borrow_shares for this market
@@ -141,13 +154,22 @@ class Market:
         """
         return self.outstanding_borrow_shares
 
-    def get_underlying_cash(self):
+    def get_underlying_cash(self, block=None):
         """Returns underlying_cash for this market
 
         :return: underlying_cash
         :rtype: int
         """
-        return self.underlying_cash
+        if block:
+            try:
+                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
+                data = data["application"]["params"]["global-state"]
+                return search_global_state(data, market_strings.underlying_cash)
+            except:
+                raise Exception("Issue getting data")
+            
+        else:
+            return self.underlying_cash
 
     def get_underlying_reserves(self):
         """Returns underlying_reserves for this market
@@ -157,13 +179,22 @@ class Market:
         """
         return self.underlying_reserves
 
-    def get_total_borrow_interest_rate(self):
+    def get_total_borrow_interest_rate(self, block=None):
         """Returns total_borrow_interest_rate for this market
 
         :return: total_borrow_interest_rate
         :rtype: int
         """
-        return self.total_borrow_interest_rate
+        if block:
+            try:
+                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
+                data = data["application"]["params"]["global-state"]
+                return search_global_state(data, market_strings.total_borrow_interest_rate)
+            except:
+                raise Exception("Issue getting data")
+            
+        else:
+            return self.total_borrow_interest_rate
     
     def get_collateral_factor(self):
         """Returns collateral_factor for this market
