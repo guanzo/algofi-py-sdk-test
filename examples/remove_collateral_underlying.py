@@ -34,7 +34,7 @@ print("~"*100)
 print_market_state(client.get_market(symbol))
 print_user_state(client, symbol, sender)
 
-asset_balance = client.get_user_balance(client.get_market(symbol).get_asset_info().get_underlying_asset_id())
+asset_balance = client.get_user_balance(client.get_market(symbol).get_asset().get_underlying_asset_id())
 if asset_balance == 0:
     raise Exception("user has no balance of asset " + symbol)
 
