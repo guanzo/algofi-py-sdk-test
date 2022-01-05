@@ -327,7 +327,7 @@ class Client:
         next_page = ""
         accounts = []
         if staking_contract_name is None:
-            app_id = self.get_active_markets()[0].get_market_app_id()
+            app_id = list(self.get_active_markets().values())[0].get_market_app_id()
         else:
             app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
         while next_page is not None:
