@@ -32,7 +32,7 @@ from .staking import prepare_staking_contract_optin_transactions, \
 
 class Client:
 
-    def __init__(self, algod_client: AlgodClient, indexer_client: IndexerClient, user_address, chain, historical_indexer_client: IndexerClient):
+    def __init__(self, algod_client: AlgodClient, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, user_address, chain):
         """Constructor method for the generic client.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
@@ -64,11 +64,11 @@ class Client:
         self.manager = Manager(self.algod, get_manager_app_id(self.chain))
         
         # market info
-        self.markets = {symbol : Market(self.algod, get_market_app_id(self.chain, symbol), self.historical_indexer) for symbol in self.max_ordered_symbols}
+        self.markets = {symbol : Market(self.algod, self.historical_indexer, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
         
         # staking contract info
         self.staking_contract_info = get_staking_contracts(self.chain)
-        self.staking_contracts = {name : StakingContract(self.algod, self.staking_contract_info[name], self.historical_indexer) for name in self.staking_contract_info.keys()}
+        self.staking_contracts = {name : StakingContract(self.algod, self.historical_indexer, self.staking_contract_info[name]) for name in self.staking_contract_info.keys()}
         
     # HELPER FUNCTIONS
 
@@ -782,7 +782,7 @@ class AlgofiTestnetClient(Client):
             algod_client = AlgodClient('', 'https://api.testnet.algoexplorer.io', headers={'User-Agent': 'algosdk'})
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://testnet.algoexplorerapi.io/idx2", headers={'User-Agent': 'algosdk'})
-        super().__init__(algod_client, indexer_client=indexer_client, user_address=user_address, chain="testnet", historical_indexer_client=historical_indexer_client)
+        super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="testnet")
 
 class AlgofiMainnetClient(Client):
     def __init__(self, algod_client=None, indexer_client=None, user_address=None):
@@ -800,4 +800,4 @@ class AlgofiMainnetClient(Client):
             algod_client = AlgodClient('', 'https://algoexplorerapi.io', headers={'User-Agent': 'algosdk'})
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoexplorerapi.io/idx2", headers={'User-Agent': 'algosdk'})
-        super().__init__(algod_client, indexer_client=indexer_client, user_address=user_address, chain="mainnet", historical_indexer_client=historical_indexer_client)
+        super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="mainnet")

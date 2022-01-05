@@ -26,7 +26,7 @@ class StakingContract:
         self.historical_indexer = historical_indexer_client
 
         self.manager = Manager(self.algod, staking_contract_info.get("managerAppId"))
-        self.market = Market(self.algod, staking_contract_info.get("marketAppId"), self.historical_indexer)
+        self.market = Market(self.algod, self.historical_indexer, staking_contract_info.get("marketAppId"))
         
         # read manager and market global state
         self.update_global_state()
