@@ -44,7 +44,7 @@ print_user_state(client, collateral_symbol, target_address)
 print_market_state(client.get_market(borrow_symbol))
 print_market_state(client.get_market(collateral_symbol))
 
-asset_balance = client.get_user_balance(client.get_market(borrow_symbol).get_asset_info().get_underlying_asset_id())
+asset_balance = client.get_user_balance(client.get_market(borrow_symbol).get_asset().get_underlying_asset_id())
 if asset_balance == 0:
     raise Exception("user has no balance of borrow asset " + symbol)
 
