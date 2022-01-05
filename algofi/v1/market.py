@@ -171,13 +171,22 @@ class Market:
         else:
             return self.underlying_cash
 
-    def get_underlying_reserves(self):
+    def get_underlying_reserves(self, block=None):
         """Returns underlying_reserves for this market
 
         :return: underlying_reserves
         :rtype: int
         """
-        return self.underlying_reserves
+        if block:
+            try:
+                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
+                data = data["application"]["params"]["global-state"]
+                return search_global_state(data, market_strings.underlying_reserves)
+            except:
+                raise Exception("Issue getting data")
+            
+        else:
+            return self.underlying_reserves
 
     def get_total_borrow_interest_rate(self, block=None):
         """Returns total_borrow_interest_rate for this market
