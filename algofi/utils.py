@@ -317,6 +317,26 @@ def get_new_account():
     passphrase = mnemonic.from_private_key(key)
     return (key, address, passphrase)
 
+def search_global_state(global_state, search_key):
+    """Returns value from the encoded global state dict of an application
+
+    :param global_state: global state of an application
+    :type global_state: dict
+    :param search_key: utf8 key of a value to search for
+    :type search_key: string
+    :return: value for the given key
+    :rtype: byte or int
+    """
+    for field in global_state:
+        key, value = field['key'], field['value']
+        if search_key == base64.b64decode(key).decode():
+            if value['type'] == 2:
+                value = value['uint']
+            else:
+                value = value['bytes']
+            return value
+    raise Exception("Key not found")
+
 
 class TransactionGroup:
 

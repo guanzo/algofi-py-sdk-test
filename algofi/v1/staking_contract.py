@@ -2,6 +2,7 @@ import json
 import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 from ..utils import read_local_state, get_global_state, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
@@ -10,19 +11,22 @@ from .manager import Manager
 from .market import Market
 
 class StakingContract:
-    def __init__(self, algod_client: AlgodClient, staking_contract_info):
+    def __init__(self, algod_client: AlgodClient, historical_indexer_client: IndexerClient, staking_contract_info):
         """Constructor method for the generic client.
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         :param staking_contract_info: dictionary of staking contract information
         :type staking_contract_info: dict
         """
 
         self.algod = algod_client
-        
+        self.historical_indexer = historical_indexer_client
+
         self.manager = Manager(self.algod, staking_contract_info.get("managerAppId"))
-        self.market = Market(self.algod, staking_contract_info.get("marketAppId"))
+        self.market = Market(self.algod, self.historical_indexer, staking_contract_info.get("marketAppId"))
         
         # read manager and market global state
         self.update_global_state()
