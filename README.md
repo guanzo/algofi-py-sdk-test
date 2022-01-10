@@ -15,7 +15,7 @@ This SDK is currently under active early development and should not be considere
 ## Installation
 algofi-py-sdk is not yet released on PYPI. It can be installed directly from this repository with pip:
 
-`pip install git+https://github.com/Algofiorg/algofi-py-sdk`
+`pip install git+https://github.com/Algofiorg/algofi-py-sdk` 
 
 To run examples:
 1. create an examples/.env file
