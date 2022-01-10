@@ -8,6 +8,7 @@ https://algofi-py-sdk.readthedocs.io/en/latest/index.html
 This SDK is useful for developers who want to programatically interact with the Algofi lending protocol.
 
 ## Status
+[![Documentation Status](https://readthedocs.org/projects/algofi-py-sdk/badge/?version=latest)](https://algofi-py-sdk.readthedocs.io/en/latest/?badge=latest)
 This SDK is currently under active early development and should not be considered stable.
 
 ## Installation
