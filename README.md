@@ -8,12 +8,14 @@ https://algofi-py-sdk.readthedocs.io/en/latest/index.html
 This SDK is useful for developers who want to programatically interact with the Algofi lending protocol.
 
 ## Status
+[![Documentation Status](https://readthedocs.org/projects/algofi-py-sdk/badge/?version=latest)](https://algofi-py-sdk.readthedocs.io/en/latest/?badge=latest)
+
 This SDK is currently under active early development and should not be considered stable.
 
 ## Installation
 algofi-py-sdk is not yet released on PYPI. It can be installed directly from this repository with pip:
 
-`pip install git+https://github.com/Algofiorg/algofi-py-sdk`
+`pip install git+https://github.com/Algofiorg/algofi-py-sdk` 
 
 To run examples:
 1. create an examples/.env file
