@@ -8,7 +8,7 @@ from ..contract_strings import algofi_manager_strings as manager_strings
 def prepare_borrow_transactions(sender, suggested_params, storage_account, amount, asset_id, manager_app_id, market_app_id, supported_market_app_ids, supported_oracle_app_ids):
     """Returns a :class:`TransactionGroup` object representing an borrow group
     transaction against the algofi protocol. Protocol sends requested borrow asset 
-    to the sender account provided sufficient collateral has been posted.
+    to the sender account provided sufficient collateral has been posted
 
     :param sender: account address for the sender
     :type sender: string
