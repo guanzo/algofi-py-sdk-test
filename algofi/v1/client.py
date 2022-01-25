@@ -749,8 +749,8 @@ class Client:
         """Submits group transaction to network + waits for completion if specified. Fails if transaction 
         fails or wait operation times out.
 
-        :param transaction_group: :class:`TransactionGroup` representing a group transaction to send to the network
-        :type transaction_group: :class:`TransactionGroup`
+        :param transaction_group: a list of signed transactions
+        :type transaction_group: list
         :param wait: boolean whether to wait for transaction to be completed, defaults to False
         :type wait: boolean, optional
         :return: dict of the transaction id {"txid": txid}
