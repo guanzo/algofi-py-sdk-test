@@ -772,7 +772,7 @@ class AlgofiTestnetClient(Client):
         
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        param indexer_client: a :class:`IndexerClient` for interacting with the network
+        :param indexer_client: a :class:`IndexerClient` for interacting with the network
         :type indexer_client: :class:`IndexerClient`
         :param user_address: address of the user
         :type user_address: string
