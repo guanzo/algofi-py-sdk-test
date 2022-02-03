@@ -388,3 +388,24 @@ class TransactionGroup:
         if wait:
             return wait_for_confirmation(algod, txid)
         return {'txid': txid}
+
+def get_accounts_opted_into_app(indexer, app_id):
+    """Submits the signed transactions to network using the algod client
+    :param indexer: indexer client
+    :type indexer: :class:`IndexerClient`
+    :param app_id: application id
+    :type app_id: int
+    :return: list of accounts opted into app
+    :rtype: list
+    """
+
+    next_page = ""
+    accounts = []
+    while next_page is not None:
+        account_data = indexer.accounts(limit=1000, next_page=next_page, application_id=app_id)
+        accounts.extend([account["address"] for account in account_data["accounts"]])
+        if "next-token" in account_data:
+            next_page = account_data["next-token"]
+        else:
+            next_page = None
+    return accounts 
