@@ -1,5 +1,5 @@
 # algofi-py-sdk
-Algofi Python SDK
+Official Python SDK for the Algofi Lending Protocol
 
 ## Documentation
 https://algofi-py-sdk.readthedocs.io/en/latest/index.html
