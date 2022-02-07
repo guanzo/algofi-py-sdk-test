@@ -489,11 +489,11 @@ class Client:
         :param target_storage_address: storage address to liquidate
         :type target_storage_address: string
         :param borrow_symbol: symbol to repay
-        :type symbol: string
+        :type borrow_symbol: string
         :param amount: amount to repay
         :type amount: int
-        :param symbol: symbol to sieze collateral from
-        :type symbol: string
+        :param collateral_symbol: symbol to sieze collateral from
+        :type collateral_symbol: string
         :param address: defaults to client user address. address to send liquidate transaction group from
         :type address: string
         :return: liquidate transaction group
@@ -649,7 +649,7 @@ class Client:
     # STAKING TRANSACTION BUILDERS
     
     def prepare_staking_contract_optin_transactions(self, staking_contract_name, storage_address, address=None):
-        """Returns an staking contract optin transaction group
+        """Returns a staking contract optin transaction group
         
         :param staking_contract_name: name of staking contract to opt in to
         :type staking_contract_name: string

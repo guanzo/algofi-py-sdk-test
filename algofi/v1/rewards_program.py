@@ -103,6 +103,12 @@ class RewardsProgram:
     def get_storage_unrealized_rewards(self, storage_address, manager, markets):
         """Return the projected claimable rewards for a given storage_address
         
+        :param storage_address:
+        :type storage_address: string
+        :param manager: a :class:`Manager` object representing the manger application
+        :type manager: :class:`Manager`
+        :param markets: list of markets to get unrealized rewards for 
+        :type markets: list
         :return: tuple of primary and secondary unrealized rewards
         :rtype: (int, int)
         """

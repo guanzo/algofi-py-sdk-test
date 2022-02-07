@@ -99,8 +99,12 @@ class Manager:
         return result
     
     def get_user_unrealized_rewards(self, address, markets):
-        """Returns projected unrealzed rewards for a user address
+        """Returns projected unrealized rewards for a user address
         
+        :param address: account address of user to get unrealized rewards for
+        :type address: string
+        :param markets: list of markets to get unrealized rewards for
+        :type markets: list
         :return: tuple of primary and secondary unrealized rewards
         :rtype: (int, int)
         """
@@ -108,8 +112,12 @@ class Manager:
         return self.get_storage_unrealized_rewards(storage_address, markets)
 
     def get_storage_unrealized_rewards(self, storage_address, markets):
-        """Returns preojected unrealized rewards for a storage address
-        
+        """Returns projected unrealized rewards for a storage address
+
+        :param storage_address: account storage address of user to get unrealized rewards for
+        :type storage_address: string
+        :param markets: list of markets to get unrealized rewards for
+        :type markets: list
         :return: tuple of primary and secondary unrealized rewards
         :rtype: (int, int)
         """
