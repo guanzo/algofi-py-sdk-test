@@ -332,7 +332,6 @@ class Client:
         else:
             app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
         while next_page is not None:
-            print(next_page)
             account_data = self.indexer.accounts(limit=1000, next_page=next_page, application_id=app_id)
             accounts.extend([account["address"] for account in account_data["accounts"]])
             if "next-token" in account_data:
