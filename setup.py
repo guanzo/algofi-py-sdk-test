@@ -6,10 +6,10 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="algofi-py-sdk",
-    description="Algofi Python SDK",
+    description="Algofi Lending Protocol Python SDK",
     author="Algofi",
-    author_email="owen@algofi.org",
-    version="0.0.6",
+    author_email="founders@algofi.org",
+    version="0.0.7",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
