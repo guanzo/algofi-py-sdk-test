@@ -171,24 +171,28 @@ def read_local_state(client, address, app_id):
     return {}
 
 
-def read_global_state(client, address, app_id):
-    """Returns dict of global state for application with id app_id. Address must be that of the creator.
+def read_global_state(client, app_id):
+    """Returns dictionary of global state for a given application
 
-    :param client: algod client
+    :param client: :class:`AlgodClient` object for interacting with network
     :type client: :class:`AlgodClient`
-    :param address: creator address
-    :type address: string
-    :param app_id: id of the application
+    :param app_id: application id
     :type app_id: int
-    :return: dict of global state for application with id app_id
+    :return: dictionary of global state for given application
     :rtype: dict
     """
-    results = client.account_info(address)
-    apps_created = results['created-apps']
-    for app in apps_created:
-        if app['id'] == app_id:
-            return format_state(app['params']['global-state'])
-    return {}
+
+    application_info = client.application_info(app_id)
+    application_global_state = application_info["params"]["global-state"]
+    formatted_global_state = {}
+    for keyvalue in application_global_state:
+        key, value = keyvalue["key"], keyvalue["value"]
+        key_formatted = b64decode(key).decode("utf-8")
+        value = value["uint"] if value["type"] == 2 else value["bytes"]
+        formatted_global_state[key_formatted] = value
+
+    return formatted_global_state
+
 
 
 def get_global_state(client, app_id):
