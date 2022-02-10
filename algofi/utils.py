@@ -2,7 +2,7 @@ import os
 import json
 from random import randint
 from enum import Enum
-import base64
+from base64 import b64decode, b64encode
 from algosdk.future.transaction import LogicSigTransaction, assign_group_id
 from algosdk import encoding, account, mnemonic
 from algosdk.error import AlgodHTTPError
@@ -134,13 +134,13 @@ def format_state(state):
         key = item['key']
         value = item['value']
         try:
-            formatted_key = base64.b64decode(key).decode('utf-8')
+            formatted_key = b64decode(key).decode('utf-8')
         except:
-            formatted_key = base64.b64decode(key)
+            formatted_key = b64decode(key)
         if value['type'] == 1:
             # byte string
             try:
-                formatted_value=base64.b64decode(value['bytes']).decode('utf-8')
+                formatted_value = b64decode(value['bytes']).decode('utf-8')
             except:
                 formatted_value=value['bytes']
             formatted[formatted_key] = formatted_value
@@ -333,7 +333,7 @@ def search_global_state(global_state, search_key):
     """
     for field in global_state:
         key, value = field['key'], field['value']
-        if search_key == base64.b64decode(key).decode():
+        if search_key == b64decode(key).decode():
             if value['type'] == 2:
                 value = value['uint']
             else:
