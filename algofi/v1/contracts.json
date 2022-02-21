@@ -220,6 +220,18 @@
                 "managerAppId": 553869413,
                 "bankAssetId": 553898734,
                 "underlyingAssetId": 552737686
+            },
+            "ALGOFI-STBL-USDC-LP": {
+                "marketAppId": 611867642,
+                "managerAppId": 611869320,
+                "bankAssetId": 611871906,
+                "underlyingAssetId": 609172718
+            },
+            "ALGOFI-STBL-ALGO-LP": {
+                "marketAppId": 611801333,
+                "managerAppId": 611804624,
+                "bankAssetId": 611811838,
+                "underlyingAssetId": 607645566
             }
         }
     }
