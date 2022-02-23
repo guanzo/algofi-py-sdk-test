@@ -87,6 +87,7 @@ class algofi_manager_strings:
         rewards_amount = "ra"
         rewards_asset_id = "rai"
         rewards_bitmap = "rbm"
+        rewards_dist_by_market = "rdbm"
         rewards_per_second = "rp"
         rewards_secondary_asset_id = "rsai"
         rewards_secondary_ratio = "rsr"
