@@ -26,6 +26,8 @@ class RewardsProgram:
         self.rewards_asset_id = manager_state.get(manager_strings.rewards_asset_id, 0)
         self.rewards_secondary_ratio = manager_state.get(manager_strings.rewards_secondary_ratio, 0)
         self.rewards_secondary_asset_id = manager_state.get(manager_strings.rewards_secondary_asset_id, 0)
+        self.rewards_bitmap = manager_state.get(manager_strings.rewards_bitmap, 0)
+        self.rewards_dist_by_market = manager_state.get(manager_strings.rewards_dist_by_market, 0)
     
     # GETTERS
 
@@ -101,7 +103,8 @@ class RewardsProgram:
     # USER FUNCTIONS
     
     def get_storage_unrealized_rewards(self, storage_address, manager, markets):
-        """Return the projected claimable rewards for a given storage_address
+        """Return the projected claimable rewards for a given storage_address.
+        Ordering of markets must be as seen in contracts.json.
         
         :return: tuple of primary and secondary unrealized rewards
         :rtype: (int, int)
@@ -112,35 +115,48 @@ class RewardsProgram:
         on_current_program = self.get_rewards_program_number() == manager_storage_state.get(manager_strings.user_rewards_program_number, 0)
         total_unrealized_rewards = manager_storage_state.get(manager_strings.user_pending_rewards, 0) if on_current_program else 0
         total_secondary_unrealized_rewards = manager_storage_state.get(manager_strings.user_secondary_pending_rewards, 0) if on_current_program else 0
-        
-        # lop through to get total TVL
-        total_borrow_usd = 0
-        for market in markets:
-            total_borrow_usd += market.get_asset().to_usd(market.get_underlying_borrowed())
-        
+        rewards_bitmap = list(map(lambda x: True if x == "1" else False, bin(self.rewards_bitmap)[::-1][:-2]))
+        rewards_dist_by_market = bin(self.rewards_dist_by_market)[::-1][:-2]
+
+        # loop through to get the weighted tvl
+        market_tvl = {}
+        market_weighted_tvl_usd = {}
+        total_weighted_tvl_usd = 0
+        for i in range(len(markets)):
+            market = markets[i]
+            is_in_rewards = rewards_bitmap[i]
+            if is_in_rewards:
+                rewards_dist_param = int(rewards_dist_by_market[4*i:4*(i+1)], 2)
+                market_underlying_tvl = market.get_underlying_borrowed() + (market.get_active_collateral() * market.get_bank_to_underlying_exchange() / SCALE_FACTOR)
+                market_tvl[market] = market_underlying_tvl
+                market_underlying_weighted_tvl_usd = market.get_asset().to_usd(market_underlying_tvl)
+                market_weighted_tvl_usd[market] = market_underlying_weighted_tvl_usd
+                total_weighted_tvl_usd += market_underlying_weighted_tvl_usd
+            else:
+                market_tvl[market] = 0
+                market_weighted_tvl_usd[market] = 0
+                total_weighted_tvl_usd += 0
+
         # calculate the projected rewards for the next coefficient
         time_elapsed = int(time.time()) - self.get_latest_rewards_time()
         rewards_issued = time_elapsed * self.get_rewards_per_second() if self.get_rewards_amount() > 0 else 0
-        projected_latest_rewards_coefficient = int(rewards_issued * REWARDS_SCALE_FACTOR)
-        
+
         for market in markets:
             # get coefficients
             market_counter_prefix = market.get_market_counter().to_bytes(8, byteorder='big').decode('utf-8')
             coefficient = manager_state.get(market_counter_prefix+manager_strings.counter_indexed_rewards_coefficient, 0)
             user_coefficient = manager_storage_state.get(market_counter_prefix+manager_strings.counter_to_user_rewards_coefficient_initial) if on_current_program else 0
             
-            market_underlying_tvl = market.get_underlying_borrowed() + (market.get_active_collateral() * market.get_bank_to_underlying_exchange() / SCALE_FACTOR)
-            projected_coefficient = coefficient + int(rewards_issued
-                                                      * REWARDS_SCALE_FACTOR
-                                                      * market.get_asset().to_usd(market.get_underlying_borrowed())
-                                                      / (total_borrow_usd * market_underlying_tvl))
+            rewards_distributed_to_market = (rewards_issued * market_weighted_tvl_usd[market]) / total_weighted_tvl_usd
+            projected_coefficient = coefficient + int((rewards_distributed_to_market * REWARDS_SCALE_FACTOR) / (market_tvl[market]))
 
             market_storage_state = market.get_storage_state(storage_address)
+            user_tvl = market_storage_state["active_collateral_underlying"] + market_storage_state["borrow_underlying"]
             unrealized_rewards = int((projected_coefficient - user_coefficient)
-                                     * (market_storage_state["active_collateral_underlying"] + market_storage_state["borrow_underlying"])
-                                     / REWARDS_SCALE_FACTOR)
+                                        * user_tvl
+                                        / REWARDS_SCALE_FACTOR)
             secondary_unrealized_rewards = int(unrealized_rewards * self.get_rewards_secondary_ratio() / PARAMETER_SCALE_FACTOR)
-        
+
             total_unrealized_rewards += unrealized_rewards
             total_secondary_unrealized_rewards += secondary_unrealized_rewards
         return total_unrealized_rewards, total_secondary_unrealized_rewards
