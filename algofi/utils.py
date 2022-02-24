@@ -263,7 +263,7 @@ def get_market_app_id(chain, symbol):
     :type chain: string e.g. 'testnet'
     :param symbol: symbol to get market data for
     :type symbol: string e.g. 'ALGO'
-    :return: =market app id
+    :return: market app id
     :rtype: int
     """
     with open(CONTRACTS_FPATH, 'r') as contracts_file:
@@ -366,7 +366,7 @@ class TransactionGroup:
             self.signed_transactions[i] = txn.sign(private_key)
     
     def sign_with_private_keys(self, private_keys):
-        """Signs the transactions with specified private key and saves to class state
+        """Signs the transactions with specified list of private keys and saves to class state
 
         :param private_key: private key of user
         :type private_key: string

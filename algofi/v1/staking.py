@@ -13,8 +13,8 @@ def prepare_staking_contract_optin_transactions(manager_app_id, market_app_id, s
 
     :param manager_app_id: id of the manager application
     :type manager_app_id: int
-    :param max_atomic_opt_in_market_app_ids: max opt in market app ids
-    :type max_atomic_opt_in_market_app_ids: list
+    :param market_app_id: id of market application 
+    :type market_app_id: int
     :param sender: account address for the sender
     :type sender: string
     :param storage_address: address of the storage account

@@ -30,8 +30,8 @@ def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, su
     :type supported_oracle_app_ids: list
     :param storage_account: account address for the storage account
     :type storage_account: string
-    :return: :class:`TransactionGroup` object representing the initial transactions
-    :rtype: :class:`TransactionGroup`
+    :return: list of transactions representing the initial transactions
+    :rtype: list
     """
     suggested_params_modified = deepcopy(suggested_params)
     # if inner transaction is required, increase fee to 2000 microalgos

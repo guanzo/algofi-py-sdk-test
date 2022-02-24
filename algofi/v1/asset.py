@@ -13,7 +13,7 @@ class Asset:
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
-        :param asset_id: underlying asset id
+        :param underlying_asset_id: underlying asset id
         :type int
         :param bank_asset_id: bank asset id
         :type int
@@ -21,10 +21,8 @@ class Asset:
         :type int
         :param oracle_price_field: price oracle price field
         :type string
-        :param oracal_price_scale_factor: price oracle scale factor to dollars
+        :param oracle_price_scale_factor: price oracle scale factor to dollars
         :type int
-        :param market_info: dictionary of market information
-        :type market_info: dict
         """
 
         self.algod = algod_client

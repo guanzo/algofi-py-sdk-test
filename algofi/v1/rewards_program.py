@@ -106,6 +106,12 @@ class RewardsProgram:
         """Return the projected claimable rewards for a given storage_address.
         Ordering of markets must be as seen in contracts.json.
         
+        :param storage_address:
+        :type storage_address: string
+        :param manager: a :class:`Manager` object representing the manger application
+        :type manager: :class:`Manager`
+        :param markets: list of markets to get unrealized rewards for 
+        :type markets: list
         :return: tuple of primary and secondary unrealized rewards
         :rtype: (int, int)
         """
