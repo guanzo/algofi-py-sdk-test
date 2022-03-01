@@ -42,12 +42,3 @@ for passphrase in ['mnemonic']:
     txn = client.prepare_optin_transactions(storage_account, sender)
     txn.sign_with_private_keys([key]+[storage_key]*len(client.get_max_atomic_opt_in_market_app_ids())+[key, storage_key])
     txn.submit(client.algod, wait=True)
-    
-    # staking contract opt in
-    for staking_contract_name in client.get_staking_contracts().keys():
-        print("Opting in to staking contract: ", staking_contract_name)
-        # generate storage account
-        staking_storage_key, staking_storage_account, staking_storage_passphrase = get_new_account()
-        txn = client.prepare_staking_contract_optin_transactions(staking_contract_name, staking_storage_account, sender)
-        txn.sign_with_private_keys([key, staking_storage_key, key, staking_storage_key])
-        txn.submit(client.algod, wait=True)
