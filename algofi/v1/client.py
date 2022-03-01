@@ -663,11 +663,11 @@ class Client:
         if not address:
             address = self.user_address
         staking_contract = self.get_staking_contract(staking_contract_name)
-        return prepare_manager_app_optin_transactions(staking_contract.get_manager_app_id(),
-                                                      [staking_contract.get_market_app_id()],
-                                                      address,
-                                                      storage_address,
-                                                      self.get_default_params())
+        return prepare_staking_contract_optin_transactions(staking_contract.get_manager_app_id(),
+                                                           staking_contract.get_market_app_id(),
+                                                           address,
+                                                           storage_address,
+                                                           self.get_default_params())
 
     def prepare_stake_transactions(self, staking_contract_name, amount, address=None):
         """Returns a staking contract stake transaction group
