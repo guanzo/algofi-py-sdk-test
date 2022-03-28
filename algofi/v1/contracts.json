@@ -160,7 +160,9 @@
             },
             "vALGO": {
                 "marketCounter": 6,
-                "marketAppId": 465814318
+                "marketAppId": 465814318,
+                "bankAssetId": 680408335,
+                "underlyingAssetId": 1
             },
             "SEVN": {
                 "marketCounter": 7,
