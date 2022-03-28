@@ -31,6 +31,12 @@ class Transactions(Enum):
     REPAY_BORROW = 8
     LIQUIDATE = 9
     CLAIM_REWARDS = 10
+    SUPPLY_ALGOS_TO_VAULT = 11
+    REMOVE_ALGOS_FROM_VAULT = 12
+    SYNC_VAULT = 13
+    SEND_GOVERNANCE_TXN = 14
+    SEND_KEYREG_ONLINE_TXN = 15
+    SEND_KEYREG_OFFLINE_TXN = 16
 
 def get_program(definition, variables=None):
     """

@@ -239,10 +239,8 @@ class Market:
         result["active_collateral_usd"] = asset.to_usd(result["active_collateral_underlying"])
         result["active_collateral_max_borrow_usd"] = result["active_collateral_usd"] * self.collateral_factor / PARAMETER_SCALE_FACTOR
         result["borrow_shares"] = user_state.get(market_strings.user_borrow_shares, 0)
-        if self.outstanding_borrow_shares:
-            result["borrow_underlying"] = int(self.underlying_borrowed * result["borrow_shares"] / self.outstanding_borrow_shares)
-        else:
-            result["borrow_underlying"] = int(0)
+        result["borrow_underlying"] = int(self.underlying_borrowed * result["borrow_shares"] / self.outstanding_borrow_shares) \
+                                        if self.outstanding_borrow_shares > 0 else 0
         result["borrow_usd"] = asset.to_usd(result["borrow_underlying"])
 
         return result

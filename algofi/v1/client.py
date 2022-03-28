@@ -24,6 +24,12 @@ from .mint_to_collateral import prepare_mint_to_collateral_transactions
 from .remove_collateral import prepare_remove_collateral_transactions
 from .remove_collateral_underlying import prepare_remove_collateral_underlying_transactions
 from .repay_borrow import prepare_repay_borrow_transactions
+from .supply_algos_to_vault import prepare_supply_algos_to_vault_transactions
+from .remove_algos_from_vault import prepare_remove_algos_from_vault_transactions
+from .sync_vault import prepare_sync_vault_transactions
+from .send_governance_transaction import prepare_send_governance_transactions
+from .send_keyreg_online_transaction import prepare_send_keyreg_online_transactions
+from .send_keyreg_offline_transaction import prepare_send_keyreg_offline_transactions
 
 from .staking import prepare_staking_contract_optin_transactions, \
                      prepare_stake_transactions, \
@@ -398,6 +404,7 @@ class Client:
         :return: add_collateral transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -424,6 +431,7 @@ class Client:
         :return: borrow transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -450,6 +458,7 @@ class Client:
         :return: burn transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -502,9 +511,11 @@ class Client:
         if not address:
             address = self.user_address
         borrow_market = self.get_market(borrow_symbol)
+        params = self.get_default_params()
         collateral_market = self.get_market(collateral_symbol)
+
         return prepare_liquidate_transactions(address,
-                                              self.get_default_params(),
+                                              params,
                                               self.manager.get_storage_address(address),
                                               target_storage_address,
                                               amount,
@@ -515,7 +526,8 @@ class Client:
                                               self.get_active_market_app_ids(),
                                               self.get_active_oracle_app_ids(),
                                               collateral_market.get_asset().get_bank_asset_id(),
-                                              borrow_market.get_asset().get_underlying_asset_id() if borrow_symbol != "ALGO" else None)
+                                              borrow_market.get_asset().get_underlying_asset_id() if borrow_symbol != "ALGO" else None,
+                                              liquidate_update_fee=3000 if collateral_symbol == 'vALGO' else 1000)
 
     def prepare_mint_transactions(self, symbol, amount, address=None):
         """Returns a mint transaction group
@@ -529,6 +541,7 @@ class Client:
         :return: mint transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -582,6 +595,7 @@ class Client:
         :return: remove_collateral transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -632,6 +646,7 @@ class Client:
         :return: repay_borrow transaction group
         :rtype: :class:`TransactionGroup`
         """
+        assert symbol != 'vALGO', 'Cannot perform operation on Algo Vault'
         if not address:
             address = self.user_address
         market = self.get_market(symbol)
@@ -742,6 +757,152 @@ class Client:
                                                           staking_contract.get_oracle_app_id(),
                                                           staking_contract.get_rewards_program().get_rewards_asset_ids())
 
+    def prepare_supply_algos_to_vault_transactions(self, amount, address=None):
+        """Returns supply algos to vault group transaction
+
+        :param amount: amount of algos in base units
+        :type amount: int
+        :param address: defaults to client user address. address to send supply algos to vault group transaction from.
+        :type address: string
+        :return: supply algos to vault transaction group
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        market = self.get_market("vALGO")
+        return prepare_supply_algos_to_vault_transactions(address,
+                                                          self.get_default_params(),
+                                                          self.manager.get_storage_address(address),
+                                                          amount,
+                                                          self.manager.get_manager_app_id(),
+                                                          market.get_market_app_id(),
+                                                          self.get_active_market_app_ids(),
+                                                          self.get_active_oracle_app_ids())
+
+    def prepare_remove_algos_from_vault_transactions(self, amount, address=None):
+        """Returns a staking contract claim rewards transaction group
+
+        :param amount: amount of algos in base units
+        :type amount: int
+        :param address: defaults to client user address. address to send remove algos from vault group transaction from.
+        :type address: string
+        :return: remove algos from vault transaction group
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        market = self.get_market("vALGO")
+        return prepare_remove_algos_from_vault_transactions(address,
+                                                            self.get_default_params(),
+                                                            self.manager.get_storage_address(address),
+                                                            amount,
+                                                            self.manager.get_manager_app_id(),
+                                                            market.get_market_app_id(),
+                                                            self.get_active_market_app_ids(),
+                                                            self.get_active_oracle_app_ids())
+
+    def prepare_sync_vault_transactions(self, address=None):
+        """Returns a sync vault transactions group
+
+        :param address: defaults to client user address. address to send sync vault group transaction from.
+        :type address: string
+        :return: sync vault group transaction
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        market = self.get_market("vALGO")
+        return prepare_sync_vault_transactions(address,
+                                               self.get_default_params(),
+                                               self.manager.get_storage_address(address),
+                                               self.manager.get_manager_app_id(),
+                                               market.get_market_app_id(),
+                                               self.get_active_market_app_ids(),
+                                               self.get_active_oracle_app_ids())
+
+    def prepare_send_governance_transactions(self, governance_address, note, address=None):
+        """Returns a send governance transaction group
+
+        :param governance_address: governance address to send payment txn to
+        :type governance_address: string
+        :param note: governance commitment json note
+        :type note: bytes
+        :param address: defaults to client user address. address to send send governance transaction group from.
+        :type address: string
+        :return: send governance transaction group
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        return prepare_send_governance_transactions(address,
+                                               self.get_default_params(),
+                                               self.manager.get_storage_address(address),
+                                               governance_address,
+                                               note,
+                                               self.manager.get_manager_app_id(),
+                                               self.get_active_market_app_ids(),
+                                               self.get_active_oracle_app_ids())
+    
+    def prepare_send_keyreg_online_transactions(self, vote_pk, selection_pk, state_proof_pk, vote_first, vote_last, vote_key_dilution, address=None):
+        """Returns a send keyreg online group transaction
+
+        :param vote_pk: vote key for consensus (generated on participation node)
+        :type vote_pk: bytes
+        :param selection_pk: selection key for consensus (generated on participation node)
+        :type selection_pk: bytes
+        :param state_proof_pk: state proof key for consensus (generated on participation node)
+        :type state_proof_pk: bytes
+        :param vote_first: first round at which account votes
+        :type vote_first: int
+        :param vote_last: last round at which account votes
+        :type vote_last: int
+        :param vote_key_dilution: key dilution
+        :type vote_key_dilution: int
+        :param address: defaults to client user address. address to send send keyreg online group transaction from.
+        :type address: string
+        :return: send keyreg group transaction
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        return prepare_send_keyreg_online_transactions(address,
+                                                       self.get_default_params(),
+                                                       self.manager.get_storage_address(address),
+                                                       vote_pk,
+                                                       selection_pk,
+                                                       state_proof_pk,
+                                                       vote_first,
+                                                       vote_last,
+                                                       vote_key_dilution,
+                                                       self.manager.get_manager_app_id(),
+                                                       self.get_active_market_app_ids(),
+                                                       self.get_active_oracle_app_ids())
+    
+    def prepare_send_keyreg_offline_transactions(self, address=None):
+        """Returns a send keyreg offline group transaction
+
+        :param address: defaults to client user address. address to send send keyreg offline group transaction from.
+        :type address: string
+        :return: send keyreg offline group transaction
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+        return prepare_send_keyreg_offline_transactions(address,
+                                                        self.get_default_params(),
+                                                        self.manager.get_storage_address(address),
+                                                        self.manager.get_manager_app_id(),
+                                                        self.get_active_market_app_ids(),
+                                                        self.get_active_oracle_app_ids())
+
+
+
     # TRANSACTION SUBMITTER
 
     def submit(self, transaction_group, wait=False):
@@ -778,7 +939,8 @@ class AlgofiTestnetClient(Client):
         """
         historical_indexer_client = IndexerClient("", "https://indexer.testnet.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
         if algod_client is None:
-            algod_client = AlgodClient('', 'https://api.testnet.algoexplorer.io', headers={'User-Agent': 'algosdk'})
+            #algod_client = AlgodClient('', 'https://node.testnet.algoexplorerapi.io', headers={'User-Agent': 'algosdk'})
+            algod_client = AlgodClient("2NGg5nliTjMri9hE4OArNbKJNPuIcsHIGkWeQJ1uV1Zu2oWB0dHwtXWhjQsCdd-h", "https://4a969cd2-725b-452a-900e-02519fbae003.algorand.bison.run/algod", headers={'User-Agent': 'algosdk'})
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoindexer.testnet.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="testnet")
@@ -796,7 +958,7 @@ class AlgofiMainnetClient(Client):
         """
         historical_indexer_client = IndexerClient("", "https://indexer.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
         if algod_client is None:
-            algod_client = AlgodClient('', 'https://algoexplorerapi.io', headers={'User-Agent': 'algosdk'})
+            algod_client = AlgodClient("B1hpPOkhyHLERjS7RNfVtawlWnSrhZYIdF0nx2uxSWWSa3YXO9sol7poRFlnkW-o", "https://4a9f55a6-73cf-4785-97db-3b60e27f2087.algorand.bison.run/algod", headers={'User-Agent': 'algosdk'})
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoindexer.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="mainnet")
