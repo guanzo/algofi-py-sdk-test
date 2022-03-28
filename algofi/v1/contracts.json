@@ -115,7 +115,7 @@
             "goBTC",
             "goETH",
             "STBL",
-            "SIIX",
+            "vALGO",
             "SEVN",
             "EGHT",
             "NINE",
@@ -158,9 +158,11 @@
                 "bankAssetId": 465818563,
                 "underlyingAssetId": 465865291
             },
-            "SIIX": {
+            "vALGO": {
                 "marketCounter": 6,
-                "marketAppId": 465814318
+                "marketAppId": 465814318,
+                "bankAssetId": 680408335,
+                "underlyingAssetId": 1
             },
             "SEVN": {
                 "marketCounter": 7,
@@ -203,7 +205,7 @@
                 "marketAppId": 465814807
             }
         },
-        "supportedMarketCount": 5,
+        "supportedMarketCount": 6,
         "maxMarketCount": 16,
         "maxAtomicOptInMarketCount": 13,
         "managerAppId": 465818260,
