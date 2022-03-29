@@ -161,54 +161,52 @@
                 "bankAssetId": 465818563,
                 "underlyingAssetId": 465865291
             },
-            "SIIX": {
-                "vALGO": {
-                    "marketCounter": 6,
-                    "marketAppId": 465814318
-                    "marketAppId": 465814318,
-                    "bankAssetId": 680408335,
-                    "underlyingAssetId": 1
-                },
-                "SEVN": {
-                    "marketCounter": 7,
-                    "marketAppId": 465814371
-                },
-                "EGHT": {
-                    "marketCounter": 8,
-                    "marketAppId": 465814435
-                },
-                "NINE": {
-                    "marketCounter": 9,
-                    "marketAppId": 465814472
-                },
-                "TENN": {
-                    "marketCounter": 10,
-                    "marketAppId": 465814527
-                },
-                "ELVN": {
-                    "marketCounter": 11,
-                    "marketAppId": 465814582
-                },
-                "TWLV": {
-                    "marketCounter": 12,
-                    "marketAppId": 465814620
-                },
-                "TRTN": {
-                    "marketCounter": 13,
-                    "marketAppId": 465814664
-                },
-                "FRTN": {
-                    "marketCounter": 14,
-                    "marketAppId": 465814701
-                },
-                "FVTN": {
-                    "marketCounter": 15,
-                    "marketAppId": 465814744
-                },
-                "SXTN": {
-                    "marketCounter": 16,
-                    "marketAppId": 465814807
-                }
+            "vALGO": {
+                "marketCounter": 6,
+                "marketAppId": 465814318,
+                "bankAssetId": 680408335,
+                "underlyingAssetId": 1
+            },
+            "SEVN": {
+                "marketCounter": 7,
+                "marketAppId": 465814371
+            },
+            "EGHT": {
+                "marketCounter": 8,
+                "marketAppId": 465814435
+            },
+            "NINE": {
+                "marketCounter": 9,
+                "marketAppId": 465814472
+            },
+            "TENN": {
+                "marketCounter": 10,
+                "marketAppId": 465814527
+            },
+            "ELVN": {
+                "marketCounter": 11,
+                "marketAppId": 465814582
+            },
+            "TWLV": {
+                "marketCounter": 12,
+                "marketAppId": 465814620
+            },
+            "TRTN": {
+                "marketCounter": 13,
+                "marketAppId": 465814664
+            },
+            "FRTN": {
+                "marketCounter": 14,
+                "marketAppId": 465814701
+            },
+            "FVTN": {
+                "marketCounter": 15,
+                "marketAppId": 465814744
+            },
+            "SXTN": {
+                "marketCounter": 16,
+                "marketAppId": 465814807
+            }
             },
             "supportedMarketCount": 5,
             "supportedMarketCount": 6,
