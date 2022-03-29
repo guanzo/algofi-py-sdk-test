@@ -940,7 +940,7 @@ class AlgofiTestnetClient(Client):
         historical_indexer_client = IndexerClient("", "https://indexer.testnet.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
         if algod_client is None:
             #algod_client = AlgodClient('', 'https://node.testnet.algoexplorerapi.io', headers={'User-Agent': 'algosdk'})
-            algod_client = AlgodClient("2NGg5nliTjMri9hE4OArNbKJNPuIcsHIGkWeQJ1uV1Zu2oWB0dHwtXWhjQsCdd-h", "https://4a969cd2-725b-452a-900e-02519fbae003.algorand.bison.run/algod", headers={'User-Agent': 'algosdk'})
+            algod_client = AlgodClient("", "https://algoexplorerapi.io/", "")
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoindexer.testnet.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="testnet")
@@ -958,7 +958,7 @@ class AlgofiMainnetClient(Client):
         """
         historical_indexer_client = IndexerClient("", "https://indexer.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
         if algod_client is None:
-            algod_client = AlgodClient("B1hpPOkhyHLERjS7RNfVtawlWnSrhZYIdF0nx2uxSWWSa3YXO9sol7poRFlnkW-o", "https://4a9f55a6-73cf-4785-97db-3b60e27f2087.algorand.bison.run/algod", headers={'User-Agent': 'algosdk'})
+            algod_client = AlgodClient("", "https://algoexplorerapi.io/", "")
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoindexer.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="mainnet")
