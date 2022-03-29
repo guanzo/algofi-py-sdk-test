@@ -6,7 +6,7 @@
             "goBTC",
             "goETH",
             "STBL",
-            "SIIX",
+            "vALGO",
             "SEVN",
             "EGHT",
             "NINE",
@@ -21,84 +21,86 @@
         "SYMBOL_INFO": {
             "ALGO": {
                 "marketCounter": 1,
-                "marketAppId": 51422140,
-                "bankAssetId": 51422936,
+                "marketAppId": 76682298,
+                "bankAssetId": 76682846,
                 "underlyingAssetId": 1
             },
             "USDC": {
                 "marketCounter": 2,
-                "marketAppId": 51422142,
-                "bankAssetId": 51422937,
-                "underlyingAssetId": 51435943
+                "marketAppId": 76682307,
+                "bankAssetId": 76682898,
+                "underlyingAssetId": 76682267
             },
             "goBTC": {
                 "marketCounter": 3,
-                "marketAppId": 51422146,
-                "bankAssetId": 51422938,
-                "underlyingAssetId": 51436723
+                "marketAppId": 76682318,
+                "bankAssetId": 76682957,
+                "underlyingAssetId": 76682275
             },
             "goETH": {
                 "marketCounter": 4,
-                "marketAppId": 51422149,
-                "bankAssetId": 51422939,
-                "underlyingAssetId": 51437163
+                "marketAppId": 76682330,
+                "bankAssetId": 76683004,
+                "underlyingAssetId": 76682284
             },
             "STBL": {
                 "marketCounter": 5,
-                "marketAppId": 51422151,
-                "bankAssetId": 51422940,
-                "underlyingAssetId": 51437956
+                "marketAppId": 76682345,
+                "bankAssetId": 76683049,
+                "underlyingAssetId": 76682292
             },
-            "SIIX": {
+            "vALGO": {
                 "marketCounter": 6,
-                "marketAppId": 51422152
+                "marketAppId": 76682360,
+                "bankAssetId": 76891649,
+                "underlyingAssetId": 1
             },
             "SEVN": {
                 "marketCounter": 7,
-                "marketAppId": 51422155
+                "marketAppId": 76682374
             },
             "EGHT": {
                 "marketCounter": 8,
-                "marketAppId": 51422158
+                "marketAppId": 76682393
             },
             "NINE": {
                 "marketCounter": 9,
-                "marketAppId": 51422161
+                "marketAppId": 76682405
             },
             "TENN": {
                 "marketCounter": 10,
-                "marketAppId": 51422164
+                "marketAppId": 76682426
             },
             "ELVN": {
                 "marketCounter": 11,
-                "marketAppId": 51422170
+                "marketAppId": 76682444
             },
             "TWLV": {
                 "marketCounter": 12,
-                "marketAppId": 51422172
+                "marketAppId": 76682494
             },
             "TRTN": {
                 "marketCounter": 13,
-                "marketAppId": 51422175
+                "marketAppId": 76682511
             },
             "FRTN": {
                 "marketCounter": 14,
-                "marketAppId": 51422177
+                "marketAppId": 76682529
             },
             "FVTN": {
                 "marketCounter": 15,
-                "marketAppId": 51422179
+                "marketAppId": 76682539
             },
             "SXTN": {
                 "marketCounter": 16,
-                "marketAppId": 51422186
+                "marketAppId": 76682558
             }
         },
-        "managerAppId": 51422788,
-        "supportedMarketCount": 5,
+        "managerAppId": 76682821,
+        "supportedMarketCount": 6,
         "maxAtomicOptInMarketCount": 13,
         "maxMarketCount": 16,
-        "initRound": 18484796,
+        "initRound": 20224634,
         "STAKING_CONTRACTS": {
             "STBL": {
                 "marketAppId": 53570045,
@@ -115,6 +117,7 @@
             "goBTC",
             "goETH",
             "STBL",
+            "SIIX",
             "vALGO",
             "SEVN",
             "EGHT",
@@ -158,83 +161,98 @@
                 "bankAssetId": 465818563,
                 "underlyingAssetId": 465865291
             },
-            "vALGO": {
-                "marketCounter": 6,
-                "marketAppId": 465814318,
-                "bankAssetId": 680408335,
-                "underlyingAssetId": 1
+            "SIIX": {
+                "vALGO": {
+                    "marketCounter": 6,
+                    "marketAppId": 465814318
+                    "marketAppId": 465814318,
+                    "bankAssetId": 680408335,
+                    "underlyingAssetId": 1
+                },
+                "SEVN": {
+                    "marketCounter": 7,
+                    "marketAppId": 465814371
+                },
+                "EGHT": {
+                    "marketCounter": 8,
+                    "marketAppId": 465814435
+                },
+                "NINE": {
+                    "marketCounter": 9,
+                    "marketAppId": 465814472
+                },
+                "TENN": {
+                    "marketCounter": 10,
+                    "marketAppId": 465814527
+                },
+                "ELVN": {
+                    "marketCounter": 11,
+                    "marketAppId": 465814582
+                },
+                "TWLV": {
+                    "marketCounter": 12,
+                    "marketAppId": 465814620
+                },
+                "TRTN": {
+                    "marketCounter": 13,
+                    "marketAppId": 465814664
+                },
+                "FRTN": {
+                    "marketCounter": 14,
+                    "marketAppId": 465814701
+                },
+                "FVTN": {
+                    "marketCounter": 15,
+                    "marketAppId": 465814744
+                },
+                "SXTN": {
+                    "marketCounter": 16,
+                    "marketAppId": 465814807
+                }
             },
-            "SEVN": {
-                "marketCounter": 7,
-                "marketAppId": 465814371
-            },
-            "EGHT": {
-                "marketCounter": 8,
-                "marketAppId": 465814435
-            },
-            "NINE": {
-                "marketCounter": 9,
-                "marketAppId": 465814472
-            },
-            "TENN": {
-                "marketCounter": 10,
-                "marketAppId": 465814527
-            },
-            "ELVN": {
-                "marketCounter": 11,
-                "marketAppId": 465814582
-            },
-            "TWLV": {
-                "marketCounter": 12,
-                "marketAppId": 465814620
-            },
-            "TRTN": {
-                "marketCounter": 13,
-                "marketAppId": 465814664
-            },
-            "FRTN": {
-                "marketCounter": 14,
-                "marketAppId": 465814701
-            },
-            "FVTN": {
-                "marketCounter": 15,
-                "marketAppId": 465814744
-            },
-            "SXTN": {
-                "marketCounter": 16,
-                "marketAppId": 465814807
-            }
-        },
-        "supportedMarketCount": 6,
-        "maxMarketCount": 16,
-        "maxAtomicOptInMarketCount": 13,
-        "managerAppId": 465818260,
-        "initRound": 18011265,
-        "STAKING_CONTRACTS": {
-            "STBL": {
-                "marketAppId": 482608867,
-                "managerAppId": 482625868,
-                "bankAssetId": 482653551,
-                "underlyingAssetId": 465865291
-            },
-            "STBL-USDC-LP-V2": {
-                "marketAppId": 553866305,
-                "managerAppId": 553869413,
-                "bankAssetId": 553898734,
-                "underlyingAssetId": 552737686
-            },
-            "ALGOFI-STBL-USDC-LP": {
-                "marketAppId": 611867642,
-                "managerAppId": 611869320,
-                "bankAssetId": 611871906,
-                "underlyingAssetId": 609172718
-            },
-            "ALGOFI-STBL-ALGO-LP": {
-                "marketAppId": 611801333,
-                "managerAppId": 611804624,
-                "bankAssetId": 611811838,
-                "underlyingAssetId": 607645566
+            "supportedMarketCount": 5,
+            "supportedMarketCount": 6,
+            "maxMarketCount": 16,
+            "maxAtomicOptInMarketCount": 13,
+            "managerAppId": 465818260,
+            "initRound": 18011265,
+            "STAKING_CONTRACTS": {
+                "STBL": {
+                    "marketAppId": 482608867,
+                    "managerAppId": 482625868,
+                    "bankAssetId": 482653551,
+                    "underlyingAssetId": 465865291
+                },
+                "STBL-USDC-LP-V2": {
+                    "marketAppId": 553866305,
+                    "managerAppId": 553869413,
+                    "bankAssetId": 553898734,
+                    "underlyingAssetId": 552737686
+                },
+                "ALGOFI-STBL-USDC-LP": {
+                    "marketAppId": 611867642,
+                    "managerAppId": 611869320,
+                    "bankAssetId": 611871906,
+                    "underlyingAssetId": 609172718
+                },
+                "ALGOFI-XET-STBL-75BP-STAKING": {
+                    "marketAppId": 635812850,
+                    "managerAppId": 635813909,
+                    "bankAssetId": 635830471,
+                    "underlyingAssetId": 635256863
+                },
+                "AF-GOBTC-STBL-25BP-STAKING": {
+                    "marketAppId": 635860537,
+                    "managerAppId": 635863793,
+                    "bankAssetId": 635866896,
+                    "underlyingAssetId": 635846733
+                },
+                "AF-GOETH-STBL-25BP-STAKING": {
+                    "marketAppId": 635864509,
+                    "managerAppId": 635866213,
+                    "bankAssetId": 635877693,
+                    "underlyingAssetId": 635854339
+                }
             }
         }
     }
-}
