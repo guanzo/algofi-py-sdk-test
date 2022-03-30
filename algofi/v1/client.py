@@ -108,7 +108,7 @@ class Client:
             try:
                 return self.indexer.account_info(address).get("account", {})
             except:
-                raise Exception("Account does not exist with address" + address + ".")
+                raise Exception("Account does not exist with address " + address + ".")
         else:
             raise Exception("user_address has not been specified")
     
@@ -140,7 +140,8 @@ class Client:
         if not address:
             address = self.user_address
         user_info = self.get_user_info(address)
-        return asset_id in [x['asset-id'] for x in user_info['assets']]
+        assets = user_info.get("assets", [])
+        return asset_id in [x['asset-id'] for x in assets]
     
     def get_user_balances(self, address=None):
         """Returns a dictionary of user balances by asset id
@@ -948,7 +949,7 @@ class AlgofiTestnetClient(Client):
         """
         historical_indexer_client = IndexerClient("", "https://indexer.testnet.algoexplorerapi.io/", headers={"User-Agent": "algosdk"})
         if algod_client is None:
-            algod_client = AlgodClient("", "https://node.testnet.algoexplorer.io", headers={"User-Agent": "algosdk"})
+            algod_client = AlgodClient("", "https://node.testnet.algoexplorerapi.io", headers={"User-Agent": "algosdk"})
         if indexer_client is None:
             indexer_client = IndexerClient("", "https://algoindexer.testnet.algoexplorerapi.io", headers={"User-Agent": "algosdk"})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="testnet")
@@ -964,9 +965,9 @@ class AlgofiMainnetClient(Client):
         :param user_address: address of the user
         :type user_address: string
         """
-        historical_indexer_client = IndexerClient("", "https://indexer.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
+        historical_indexer_client = IndexerClient("", "https://indexer.algoexplorerapi.io/", headers={"User-Agent": "algosdk"})
         if algod_client is None:
-            algod_client = AlgodClient("", "https://algoexplorerapi.io/", "")
+            algod_client = AlgodClient("", "https://node.algoexplorerapi.io", headers={"User-Agent": "algosdk"})
         if indexer_client is None:
-            indexer_client = IndexerClient("", "https://algoindexer.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
+            indexer_client = IndexerClient("", "https://algoindexer.algoexplorerapi.io", headers={"User-Agent": "algosdk"})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="mainnet")

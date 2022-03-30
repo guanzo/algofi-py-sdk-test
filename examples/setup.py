@@ -26,13 +26,14 @@ for passphrase in ['mnemonic']:
     client = AlgofiMainnetClient(user_address=sender) if IS_MAINNET else AlgofiTestnetClient(user_address=sender)
 
     # Opting primary account into the available assets
-    for asset_id in client.get_active_asset_ids() + client.get_active_bank_asset_ids():
+    assets = client.get_active_asset_ids() + client.get_active_bank_asset_ids()
+    for i in range(len(assets)):
+        asset_id = assets[i]
         if asset_id != 1 and not client.is_opted_into_asset(asset_id, sender):
             print("Opting into asa: ", asset_id)
             txn = prepare_asset_optin_transactions(asset_id, sender, client.get_default_params())
             txn.sign_with_private_key(sender, key)
-            txn.submit(client.algod, wait=False)
-    time.sleep(10)
+            txn.submit(client.algod, wait=False if (i != (len(assets) - 1)) else True)
 
     # generate storage account
     storage_key, storage_account, storage_passphrase = get_new_account()

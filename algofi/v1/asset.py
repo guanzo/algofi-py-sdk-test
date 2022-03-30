@@ -2,6 +2,7 @@ import json
 import base64
 from algosdk import encoding
 from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 from ..utils import read_local_state, get_global_state
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
@@ -31,17 +32,20 @@ class Asset:
         self.underlying_asset_id = underlying_asset_id
         self.bank_asset_id = bank_asset_id
 
-        try:
-            underlying_asset_info = self.indexer.asset_info(underlying_asset_id).get("asset",{})
-        except:
-            raise Exception("Asset with id " + str(underlying_asset_id) + " does not exist.")
+        if underlying_asset_id != 1:
+            try:
+                underlying_asset_info = self.indexer.asset_info(underlying_asset_id).get("asset",{})
+                self.underlying_asset_info = underlying_asset_info["params"]
+            except:
+                raise Exception("Asset with id " + str(underlying_asset_id) + " does not exist.")
+        else:
+            self.underlying_asset_info = {"decimals":6}
 
         try:
             bank_asset_info = self.indexer.asset_info(bank_asset_id).get("asset",{})
         except:
             raise Exception("Asset with id " + str(bank_asset_id) + " does not exist.")
 
-        self.underlying_asset_info = underlying_asset_info["params"] if underlying_asset_id != 1 else {"decimals":6}
         self.bank_asset_info = bank_asset_info["params"]
         
         # oracle info

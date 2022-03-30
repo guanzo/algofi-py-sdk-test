@@ -194,7 +194,7 @@ def read_global_state(indexer_client, app_id):
     """
 
     try:
-        application_info = indexer_client.applications(application_id).get("application", {})
+        application_info = indexer_client.applications(app_id).get("application", {})
     except:
         raise Exception("Application does not exist.")
 
@@ -221,7 +221,7 @@ def get_global_state(indexer_client, app_id):
     """
 
     try:
-        application_info = indexer_client.applications(application_id).get("application", {})
+        application_info = indexer_client.applications(app_id).get("application", {})
     except:
         raise Exception("Application does not exist.")
 

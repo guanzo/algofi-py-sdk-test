@@ -117,7 +117,6 @@
             "goBTC",
             "goETH",
             "STBL",
-            "SIIX",
             "vALGO",
             "SEVN",
             "EGHT",
@@ -207,50 +206,49 @@
                 "marketCounter": 16,
                 "marketAppId": 465814807
             }
+        },
+        "managerAppId": 465818260,
+        "supportedMarketCount": 6,
+        "maxAtomicOptInMarketCount": 13,
+        "maxMarketCount": 16,
+        "initRound": 18011265,
+        "STAKING_CONTRACTS": {
+            "STBL": {
+                "marketAppId": 482608867,
+                "managerAppId": 482625868,
+                "bankAssetId": 482653551,
+                "underlyingAssetId": 465865291
             },
-            "supportedMarketCount": 5,
-            "supportedMarketCount": 6,
-            "maxMarketCount": 16,
-            "maxAtomicOptInMarketCount": 13,
-            "managerAppId": 465818260,
-            "initRound": 18011265,
-            "STAKING_CONTRACTS": {
-                "STBL": {
-                    "marketAppId": 482608867,
-                    "managerAppId": 482625868,
-                    "bankAssetId": 482653551,
-                    "underlyingAssetId": 465865291
-                },
-                "STBL-USDC-LP-V2": {
-                    "marketAppId": 553866305,
-                    "managerAppId": 553869413,
-                    "bankAssetId": 553898734,
-                    "underlyingAssetId": 552737686
-                },
-                "ALGOFI-STBL-USDC-LP": {
-                    "marketAppId": 611867642,
-                    "managerAppId": 611869320,
-                    "bankAssetId": 611871906,
-                    "underlyingAssetId": 609172718
-                },
-                "ALGOFI-XET-STBL-75BP-STAKING": {
-                    "marketAppId": 635812850,
-                    "managerAppId": 635813909,
-                    "bankAssetId": 635830471,
-                    "underlyingAssetId": 635256863
-                },
-                "AF-GOBTC-STBL-25BP-STAKING": {
-                    "marketAppId": 635860537,
-                    "managerAppId": 635863793,
-                    "bankAssetId": 635866896,
-                    "underlyingAssetId": 635846733
-                },
-                "AF-GOETH-STBL-25BP-STAKING": {
-                    "marketAppId": 635864509,
-                    "managerAppId": 635866213,
-                    "bankAssetId": 635877693,
-                    "underlyingAssetId": 635854339
-                }
+            "STBL-USDC-LP-V2": {
+                "marketAppId": 553866305,
+                "managerAppId": 553869413,
+                "bankAssetId": 553898734,
+                "underlyingAssetId": 552737686
+            },
+            "ALGOFI-STBL-USDC-LP": {
+                "marketAppId": 611867642,
+                "managerAppId": 611869320,
+                "bankAssetId": 611871906,
+                "underlyingAssetId": 609172718
+            },
+            "ALGOFI-XET-STBL-75BP-STAKING": {
+                "marketAppId": 635812850,
+                "managerAppId": 635813909,
+                "bankAssetId": 635830471,
+                "underlyingAssetId": 635256863
+            },
+            "AF-GOBTC-STBL-25BP-STAKING": {
+                "marketAppId": 635860537,
+                "managerAppId": 635863793,
+                "bankAssetId": 635866896,
+                "underlyingAssetId": 635846733
+            },
+            "AF-GOETH-STBL-25BP-STAKING": {
+                "marketAppId": 635864509,
+                "managerAppId": 635866213,
+                "bankAssetId": 635877693,
+                "underlyingAssetId": 635854339
             }
         }
     }
+}
