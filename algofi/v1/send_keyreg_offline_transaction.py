@@ -42,7 +42,7 @@ def prepare_send_keyreg_offline_transactions(sender, suggested_params, storage_a
         sender=sender,
         sp=suggested_params,
         index=manager_app_id,
-        app_args=[manager_strings.send_keyreg_nonparticipation_txn.encode()],
+        app_args=[manager_strings.send_keyreg_offline_txn.encode()],
         accounts=[storage_account],
     )
 
