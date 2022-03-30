@@ -55,5 +55,5 @@ txn.submit(client.algod, wait=True)
 # print final state
 print("~"*100)
 print("Final State")
-print("Sent governance transaction with note: " + str(dummy_note))
+print("Sent send_governance_commitment_transaction transaction for vault address " + vault_address)
 print("~"*100)
