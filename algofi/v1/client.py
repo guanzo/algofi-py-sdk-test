@@ -833,29 +833,86 @@ class Client:
                                                self.get_active_market_app_ids(),
                                                self.get_active_oracle_app_ids())
 
-    def prepare_send_governance_transactions(self, governance_address, note, address=None):
-        """Returns a send governance transaction group
+    def prepare_send_governance_commitment_transactions(self, governance_address, commitment_amount, address=None, beneficary=None):
+        """Returns a send governance commitment group transaction. A zero-value PaymentTxn with formatted notes field. 
+        Format for notes field can be found within Algorand Foundation Governance Spec at 
+        <https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md>
 
-        :param governance_address: governance address to send payment txn to
+        :param governance_address: governance address to send commitment txn to. Get governance address from <https://governance.algorand.foundation/api/periods> 
+        within the relevant period "sign_up_address"
         :type governance_address: string
-        :param note: governance commitment json note
-        :type note: bytes
-        :param address: defaults to client user address. address to send send governance transaction group from.
-        :type address: string
-        :return: send governance transaction group
+        :param commitment_amount: amount of ALGOs (in microalgos) to commit to governance
+        :type commitment_amount: int
+        :param address: defaults to client user address. address to send send governance commitment transaction group from. 
+        this is the primary account address for Algofi, not the vault account address from which the commitment inner transaction will originate.
+        :type address: string, optional
+        :param beneficiary: specify a beneficiary of the governance rewards. governance rewards will be sent from the Algorand Foundation 
+        to this address at the end of governance if the vault account is eligible for rewards.
+        :type beneficiary: string, optional
+        :return: send governance commitment transaction group
         :rtype: :class:`TransactionGroup`
         """
 
         if not address:
             address = self.user_address
+
+        # prepare note based on commitment amount
+        # without beneficary: af/gov1:j{"com":<n>}
+        # with beneficary: af/gov1:j{"com":nnn,"bnf":"aaa"}
+        # see spec for format at https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md
+
+        if beneficiary:
+            note = b'af/gov1:j{"com":%s}' % (bytes(str(commitment_amount), "utf-8"))
+        else:
+            note = b'af/gov1:j{"com":%s,"%s"}' % (bytes(str(commitment_amount),"utf-8"),bytes(governance_address,"utf-8"))
+
         return prepare_send_governance_transactions(address,
-                                               self.get_default_params(),
-                                               self.manager.get_storage_address(address),
-                                               governance_address,
-                                               note,
-                                               self.manager.get_manager_app_id(),
-                                               self.get_active_market_app_ids(),
-                                               self.get_active_oracle_app_ids())
+                                                    self.get_default_params(),
+                                                    self.manager.get_storage_address(address),
+                                                    governance_address,
+                                                    note,
+                                                    self.manager.get_manager_app_id(),
+                                                    self.get_active_market_app_ids(),
+                                                    self.get_active_oracle_app_ids())
+    
+    def prepare_send_governance_vote_transactions(self, governance_address, note, address=None):
+        """Returns a send governance vote group transaction. A zero-value PaymentTxn with formatted notes field. 
+        Format for voting notes field can be found within Algorand Foundation Governance Spec at 
+        <https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md>
+
+        :param governance_address: governance address to send vote txn to. Get governance address from <https://governance.algorand.foundation/api/periods> 
+        within the relevant period "sign_up_address"
+        :type governance_address: string
+        :param note: notes field for voting in governance. see spec for voting notes field at 
+        https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md
+        format is af/gov1:j[idx,q1,q2,...]
+        idx is the voting session index which can be found at https://governance.algorand.foundation/api/periods
+        under the proper governance period within "voting_sessions" under the "id" field
+        q1,q2 are votes to the specific measures within a given voting session
+        example 1 (vote with all ALGOs on choice "a" in measure 1 and choice "c" in measure 2): af/gov1:j[4,"a","c"]
+        example 2 (vote choice "a" with 100 microalgos and choice "b" with 900 microalgos in measure 1; vote choice "c" with all microalgos in measure 2): af/gov1:j[4,{"a":100,"b":900},"c"]
+        NOTE: in example 2, voting with less than full commitment requires that the full commitment is distributing across all choices. for example, if 
+        you commit 1000 microalgos via the Vault, during voting you must use all 1000 microalgos in voting. in a 2-choice vote, you could not vote choice "a" 
+        with 100 and choice "b" with 899 microalgos. the sum must be 1000 microalgos (100 + 899 = 999 != 1000)
+        :type note: bytes
+        :param address: defaults to client user address. address to send send governance vote transaction group from. 
+        this is the primary account address for Algofi, not the vault account address from which the vote inner transaction will originate.
+        :type address: string, optional
+        :return: send governance vote transaction group
+        :rtype: :class:`TransactionGroup`
+        """
+
+        if not address:
+            address = self.user_address
+
+        return prepare_send_governance_transactions(address,
+                                                    self.get_default_params(),
+                                                    self.manager.get_storage_address(address),
+                                                    governance_address,
+                                                    note,
+                                                    self.manager.get_manager_app_id(),
+                                                    self.get_active_market_app_ids(),
+                                                    self.get_active_oracle_app_ids())
     
     def prepare_send_keyreg_online_transactions(self, vote_pk, selection_pk, state_proof_pk, vote_first, vote_last, vote_key_dilution, address=None):
         """Returns a send keyreg online group transaction
