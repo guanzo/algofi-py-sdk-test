@@ -30,7 +30,7 @@ print("Processing send_governance_transaction transaction")
 print("~"*100)
 
 dummy_address = "NRWXXRVO7UOYGH5YAYE4RCMHVQ2G6FAPOYZIKGGF5N3RK7GD7M3ZIUH6TM"
-dummy_note = b"{'gov2': 123131}"
+dummy_note = b'af/gov1:j{"com":1000}'
 txn = client.prepare_send_governance_transactions(dummy_address, dummy_note, sender)
 txn.sign_with_private_key(sender, key)
 txn.submit(client.algod, wait=True)
