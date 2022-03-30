@@ -151,3 +151,13 @@ class Asset:
         """
         price = self.get_price()
         return float(amount * price / (10**self.get_underlying_decimals()))
+
+    def get_scaled_amount(self, amount):
+        """Returns an integer representation of asset amount scaled by asset's decimals
+        :param amount: amount of asset
+        :type amount: float
+        :return: int amount of asset scaled by decimals
+        :rtype: int
+        """
+
+        return int(amount * 10**(self.underlying_asset_info['decimals']))

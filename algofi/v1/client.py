@@ -833,7 +833,7 @@ class Client:
                                                self.get_active_market_app_ids(),
                                                self.get_active_oracle_app_ids())
 
-    def prepare_send_governance_commitment_transactions(self, governance_address, commitment_amount, address=None, beneficary=None):
+    def prepare_send_governance_commitment_transactions(self, governance_address, commitment_amount, address=None, beneficiary=None):
         """Returns a send governance commitment group transaction. A zero-value PaymentTxn with formatted notes field. 
         Format for notes field can be found within Algorand Foundation Governance Spec at 
         <https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md>
@@ -862,9 +862,9 @@ class Client:
         # see spec for format at https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md
 
         if beneficiary:
-            note = b'af/gov1:j{"com":%s}' % (bytes(str(commitment_amount), "utf-8"))
+            note = b'af/gov1:j{"com":%s,"bnf":"%s"}' % (bytes(str(commitment_amount),"utf-8"),bytes(beneficiary,"utf-8"))
         else:
-            note = b'af/gov1:j{"com":%s,"%s"}' % (bytes(str(commitment_amount),"utf-8"),bytes(governance_address,"utf-8"))
+            note = b'af/gov1:j{"com":%s}' % (bytes(str(commitment_amount), "utf-8"))
 
         return prepare_send_governance_transactions(address,
                                                     self.get_default_params(),
