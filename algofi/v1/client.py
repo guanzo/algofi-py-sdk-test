@@ -106,7 +106,12 @@ class Client:
             address = self.user_address
         if address:
             try:
-                return self.indexer.account_info(address).get("account", {})
+                user_info = self.indexer.account_info(address).get("account", {})
+                if "apps-local-state" not in user_info:
+                    user_info["apps-local-state"] = []
+                if "assets" not in user_info:
+                    user_info["assets"] = []
+                return user_info
             except:
                 raise Exception("Account does not exist with address " + address + ".")
         else:
