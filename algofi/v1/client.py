@@ -833,7 +833,7 @@ class Client:
                                                self.get_active_market_app_ids(),
                                                self.get_active_oracle_app_ids())
 
-    def prepare_send_governance_commitment_transactions(self, governance_address, commitment_amount, address=None, beneficiary=None):
+    def prepare_send_governance_commitment_transactions(self, governance_address, commitment_amount, address=None, beneficiary=None, check_vault_balance=True):
         """Returns a send governance commitment group transaction. A zero-value PaymentTxn with formatted notes field. 
         Format for notes field can be found within Algorand Foundation Governance Spec at 
         <https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md>
@@ -849,12 +849,21 @@ class Client:
         :param beneficiary: specify a beneficiary of the governance rewards. governance rewards will be sent from the Algorand Foundation 
         to this address at the end of governance if the vault account is eligible for rewards.
         :type beneficiary: string, optional
+        :param check_vault_balance: checks the ALGO balance of the Vault. raises exception if commitment amount > the ALGO balance of the Vault account.
+        :type check_vault_balance: boolean, default True
         :return: send governance commitment transaction group
         :rtype: :class:`TransactionGroup`
         """
 
         if not address:
             address = self.user_address
+
+        # get balance of vault account
+        vault_address = self.manager.get_storage_address(address)
+        vault_account_algo_balance = self.get_user_balance(asset_id=1, address=vault_address)
+        if commitment_amount > vault_account_algo_balance:
+            raise Exception("Commitment amount of " + str(commitment_amount) + " microAlgos exceeds ALGO balance of vault with address " + \
+                            vault_address + " (balance: " + str(vault_account_algo_balance) + ")")
 
         # prepare note based on commitment amount
         # without beneficary: af/gov1:j{"com":<n>}
