@@ -10,18 +10,18 @@ from .asset import Asset
 
 class Market:
 
-    def __init__(self, algod_client: AlgodClient, historical_indexer_client: IndexerClient, market_app_id):
+    def __init__(self, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, market_app_id):
         """Constructor method for the market object.
 
-        :param algod_client: a :class:`AlgodClient` for interacting with the network
-        :type algod_client: :class:`AlgodClient`
+        :param indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type indexer_client: :class:`IndexerClient`
         :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
         :type historical_indexer_client: :class:`IndexerClient`
         :param market_app_id: market app id
         :type market_app_id: int
         """
 
-        self.algod = algod_client
+        self.indexer = indexer_client
         self.historical_indexer = historical_indexer_client
 
         self.market_app_id = market_app_id
@@ -33,7 +33,7 @@ class Market:
     def update_global_state(self):
         """Method to fetch most recent market global state.
         """
-        market_state = get_global_state(self.algod, self.market_app_id)
+        market_state = get_global_state(self.indexer, self.market_app_id)
         # market constants
         self.market_counter = market_state[market_strings.manager_market_counter_var]
         
@@ -65,7 +65,7 @@ class Market:
         self.underlying_reserves = market_state.get(market_strings.underlying_reserves, 0)
         self.total_borrow_interest_rate = market_state.get(market_strings.total_borrow_interest_rate, 0)
     
-        self.asset = Asset(self.algod,
+        self.asset = Asset(self.indexer,
                            self.underlying_asset_id,
                            self.bank_asset_id,
                            self.oracle_app_id,
@@ -232,7 +232,7 @@ class Market:
         :rtype: dict
         """
         result = {}
-        user_state = read_local_state(self.algod, storage_address, self.market_app_id)
+        user_state = read_local_state(self.indexer, storage_address, self.market_app_id)
         asset = self.get_asset()
         result["active_collateral_bank"] = user_state.get(market_strings.user_active_collateral, 0)
         result["active_collateral_underlying"] = int(result["active_collateral_bank"] * self.bank_to_underlying_exchange / SCALE_FACTOR)

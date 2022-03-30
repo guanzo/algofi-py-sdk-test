@@ -43,8 +43,14 @@ class Client:
 
         :param algod_client: a :class:`AlgodClient` for interacting with the network
         :type algod_client: :class:`AlgodClient`
+        :param indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type indexer_client: :class:`IndexerClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network historically
+        :type historical_indexer_client: :class:`IndexerClient`
         :param user_address: address of the user
         :type user_address: string
+        :param chain: network type
+        :type chain: string
         """
         
         # constants
@@ -67,14 +73,14 @@ class Client:
         self.max_atomic_opt_in_ordered_symbols = get_ordered_symbols(self.chain, max_atomic_opt_in=True)
         
         # manager info
-        self.manager = Manager(self.algod, get_manager_app_id(self.chain))
+        self.manager = Manager(self.indexer, get_manager_app_id(self.chain))
         
         # market info
-        self.markets = {symbol : Market(self.algod, self.historical_indexer, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
+        self.markets = {symbol : Market(self.indexer, self.historical_indexer, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
         
         # staking contract info
         self.staking_contract_info = get_staking_contracts(self.chain)
-        self.staking_contracts = {name : StakingContract(self.algod, self.historical_indexer, self.staking_contract_info[name]) for name in self.staking_contract_info.keys()}
+        self.staking_contracts = {name : StakingContract(self.indexer, self.historical_indexer, self.staking_contract_info[name]) for name in self.staking_contract_info.keys()}
         
     # HELPER FUNCTIONS
 
@@ -99,7 +105,10 @@ class Client:
         if not address:
             address = self.user_address
         if address:
-            return self.algod.account_info(address)
+            try:
+                return self.indexer.account_info(address).get("account", {})
+            except:
+                raise Exception("Account does not exist with address" + address + ".")
         else:
             raise Exception("user_address has not been specified")
     
@@ -937,12 +946,11 @@ class AlgofiTestnetClient(Client):
         :param user_address: address of the user
         :type user_address: string
         """
-        historical_indexer_client = IndexerClient("", "https://indexer.testnet.algoexplorerapi.io/", headers={'User-Agent': 'algosdk'})
+        historical_indexer_client = IndexerClient("", "https://indexer.testnet.algoexplorerapi.io/", headers={"User-Agent": "algosdk"})
         if algod_client is None:
-            #algod_client = AlgodClient('', 'https://node.testnet.algoexplorerapi.io', headers={'User-Agent': 'algosdk'})
-            algod_client = AlgodClient("", "https://algoexplorerapi.io/", "")
+            algod_client = AlgodClient("", "https://node.testnet.algoexplorer.io", headers={"User-Agent": "algosdk"})
         if indexer_client is None:
-            indexer_client = IndexerClient("", "https://algoindexer.testnet.algoexplorerapi.io", headers={'User-Agent': 'algosdk'})
+            indexer_client = IndexerClient("", "https://algoindexer.testnet.algoexplorerapi.io", headers={"User-Agent": "algosdk"})
         super().__init__(algod_client, indexer_client=indexer_client, historical_indexer_client=historical_indexer_client, user_address=user_address, chain="testnet")
 
 class AlgofiMainnetClient(Client):
