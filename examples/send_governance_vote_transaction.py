@@ -23,34 +23,32 @@ sender = mnemonic.to_public_key(user['mnemonic'])
 key =  mnemonic.to_private_key(user['mnemonic'])
 
 # IS_MAINNET
-IS_MAINNET = True
+IS_MAINNET = False
 client = AlgofiMainnetClient(user_address=sender) if IS_MAINNET else AlgofiTestnetClient(user_address=sender)
-ALGO = client.get_active_assets()["ALGO"]
 
 # NOTE: Get the live governance address at https://governance.algorand.foundation/api/periods/
 # under "sign_up_address" for the relevant governance period
-# Specify your commitment amount in ALGOs
-# If desired, specify the beneficiary of your governance rewards
+# Specify your vote according to the formats that are permissible in the Algorand Foundation Spec
+# https://github.com/algorandfoundation/governance/blob/main/af-gov1-spec.md
+# Get the idx, vote choices based on the relevant voting session from https://governance.algorand.foundation/api/periods/
+
 address = sender
 governance_address = ""
-commitment_amount = 0
-beneficiary = ""
-
-commitment_amount_scaled = ALGO.get_scaled_amount(commitment_amount)
+vote_note = b'af/gov1:j[6,"a","c"]' # NOTE: an example, not to be used in live voting necessarily
 
 vault_address = client.manager.get_storage_address(address)
 
 print("~"*100)
-print("Processing send_governance_commitment_transaction transaction for vault address " + vault_address)
+print("Processing send_governance_vote_transaction transaction for vault address " + vault_address)
 print("~"*100)
 
-txn = client.prepare_send_governance_commitment_transactions(governance_address, commitment_amount_scaled, address=address, beneficiary=beneficiary)
+txn = client.prepare_send_governance_vote_transactions(governance_address, note=vote_note, address=address)
 txn.sign_with_private_key(sender, key)
 txn.submit(client.algod, wait=True)
 
-# After sending, check your commitment amount at
+# After sending, check your vote at
 # https://governance.algorand.foundation/api/periods/<governance-period-slug>/governors/<vault_address>
-# to confirm successful commitment of ALGOs
+# to confirm successful vote in voting session
 
 # print final state
 print("~"*100)
