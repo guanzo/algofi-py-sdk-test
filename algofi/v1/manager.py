@@ -2,22 +2,23 @@ import json
 import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 from ..utils import read_local_state, get_global_state, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .rewards_program import RewardsProgram
 
 class Manager:
-    def __init__(self, algod_client: AlgodClient, manager_app_id):
+    def __init__(self, indexer_client: IndexerClient, manager_app_id):
         """Constructor method for manager object.
 
-        :param algod_client: a :class:`AlgodClient` for interacting with the network
-        :type algod_client: :class:`AlgodClient`
+        :param indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type indexer_client: :class:`IndexerClient`
         :param manager_app_id: manager app id
         :type manager_app_id: int
         """
 
-        self.algod = algod_client
+        self.indexer = indexer_client
 
         self.manager_app_id = manager_app_id
         self.manager_address = logic.get_application_address(self.manager_app_id)
@@ -28,8 +29,8 @@ class Manager:
     def update_global_state(self):
         """Method to fetch most recent manager global state.
         """
-        manager_state = get_global_state(self.algod, self.manager_app_id)
-        self.rewards_program = RewardsProgram(self.algod, manager_state)
+        manager_state = get_global_state(self.indexer, self.manager_app_id)
+        self.rewards_program = RewardsProgram(self.indexer, manager_state)
     
     # GETTERS
     
@@ -67,7 +68,7 @@ class Manager:
         :return: storage account address for user
         :rtype: string
         """
-        user_manager_state = read_local_state(self.algod, address, self.manager_app_id)
+        user_manager_state = read_local_state(self.indexer, address, self.manager_app_id)
         raw_storage_address = user_manager_state.get(manager_strings.user_storage_address, None)
         if not raw_storage_address:
             raise Exception("No storage address found")
@@ -93,7 +94,7 @@ class Manager:
         :rtype: dict
         """
         result = {}
-        user_state = read_local_state(self.algod, storage_address, self.manager_app_id)
+        user_state = read_local_state(self.indexer, storage_address, self.manager_app_id)
         result["user_global_max_borrow_in_dollars"] = user_state.get(manager_strings.user_global_max_borrow_in_dollars, 0) 
         result["user_global_borrowed_in_dollars"] = user_state.get(manager_strings.user_global_borrowed_in_dollars, 0)
         return result

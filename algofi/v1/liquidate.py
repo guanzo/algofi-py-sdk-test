@@ -3,9 +3,10 @@ from algosdk.future.transaction import ApplicationNoOpTxn, PaymentTxn, AssetTran
 from .prepend import get_init_txns
 from ..utils import Transactions, TransactionGroup
 from ..contract_strings import algofi_manager_strings as manager_strings
+from copy import deepcopy
 
 
-def prepare_liquidate_transactions(sender, suggested_params, storage_account, liquidatee_storage_account, amount, manager_app_id, borrow_market_app_id, borrow_market_address, collateral_market_app_id, supported_market_app_ids, supported_oracle_app_ids, collateral_bank_asset_id, borrow_asset_id=None):
+def prepare_liquidate_transactions(sender, suggested_params, storage_account, liquidatee_storage_account, amount, manager_app_id, borrow_market_app_id, borrow_market_address, collateral_market_app_id, supported_market_app_ids, supported_oracle_app_ids, collateral_bank_asset_id, borrow_asset_id=None, liquidate_update_fee=1000):
     """Returns a :class:`TransactionGroup` object representing a liquidate group
     transaction against the algofi protocol. The sender (liquidator) repays up to 
     50% of the liquidatee's outstanding borrow and takes collateral of the liquidatee 
@@ -13,6 +14,7 @@ def prepare_liquidate_transactions(sender, suggested_params, storage_account, li
     account address of the borrow market. Then, the account of the collateral market is authorized 
     to credit the liquidator with a greater value of the liquidatee's collateral. The liquidator can
     then remove collateral to underlying to convert the collateral to assets.
+    NOTE: seizing vALGO collateral returns ALGOs not bAssets. all other markets return bAssets.
 
     :param sender: account address for the sender (liquidator)
     :type sender: string
@@ -82,9 +84,11 @@ def prepare_liquidate_transactions(sender, suggested_params, storage_account, li
             receiver=borrow_market_address,
             amt=amount
         )
+    collateral_params = deepcopy(suggested_params)
+    collateral_params.fee = liquidate_update_fee
     txn3 = ApplicationNoOpTxn(
         sender=sender,
-        sp=suggested_params,
+        sp=collateral_params,
         index=collateral_market_app_id, 
         app_args=[manager_strings.liquidate.encode()],
         foreign_apps=[manager_app_id, borrow_market_app_id],

@@ -37,8 +37,10 @@ def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, su
     # if inner transaction is required, increase fee to 2000 microalgos
     if (transaction_type in [Transactions.MINT, Transactions.BURN, Transactions.REMOVE_COLLATERAL,
                             Transactions.REMOVE_COLLATERAL_UNDERLYING, Transactions.BORROW, Transactions.REPAY_BORROW, Transactions.LIQUIDATE,
-                            Transactions.CLAIM_REWARDS]):
+                            Transactions.CLAIM_REWARDS, Transactions.SEND_GOVERNANCE_TXN, Transactions.SEND_KEYREG_ONLINE_TXN, Transactions.SEND_KEYREG_OFFLINE_TXN]):
         suggested_params_modified.fee = 2000
+    elif transaction_type in [Transactions.REMOVE_ALGOS_FROM_VAULT]:
+        suggested_params_modified.fee = 4000
     # refresh market variables on manager, update prices on manager and update protocol data + add dummy txns to "buy" cost units
     txn0 = ApplicationNoOpTxn(
         sender=sender,

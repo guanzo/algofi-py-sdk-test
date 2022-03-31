@@ -31,6 +31,12 @@ class Transactions(Enum):
     REPAY_BORROW = 8
     LIQUIDATE = 9
     CLAIM_REWARDS = 10
+    SUPPLY_ALGOS_TO_VAULT = 11
+    REMOVE_ALGOS_FROM_VAULT = 12
+    SYNC_VAULT = 13
+    SEND_GOVERNANCE_TXN = 14
+    SEND_KEYREG_ONLINE_TXN = 15
+    SEND_KEYREG_OFFLINE_TXN = 16
 
 def get_program(definition, variables=None):
     """
@@ -150,11 +156,11 @@ def format_state(state):
     return formatted
 
 
-def read_local_state(client, address, app_id):
+def read_local_state(indexer_client, address, app_id):
     """Returns dict of local state for address for application with id app_id
 
-    :param client: algod client
-    :type client: :class:`AlgodClient`
+    :param indexer_client: indexer client
+    :type indexer_client: :class:`IndexerClient`
     :param address: address of account for which to get state
     :type address: string
     :param app_id: id of the application
@@ -162,7 +168,12 @@ def read_local_state(client, address, app_id):
     :return: dict of local state of address for application with id app_id
     :rtype: dict
     """
-    results = client.account_info(address)
+    
+    try:
+        results = indexer_client.account_info(address).get("account", {})
+    except:
+        raise Exception("Account does not exist.")
+
     for local_state in results['apps-local-state']:
         if local_state['id'] == app_id:
             if 'key-value' not in local_state:
@@ -171,18 +182,22 @@ def read_local_state(client, address, app_id):
     return {}
 
 
-def read_global_state(client, app_id):
+def read_global_state(indexer_client, app_id):
     """Returns dictionary of global state for a given application
 
-    :param client: :class:`AlgodClient` object for interacting with network
-    :type client: :class:`AlgodClient`
+    :param indexer_client: :class:`IndexerClient` object for interacting with network
+    :type indexer_client: :class:`IndexerClient`
     :param app_id: application id
     :type app_id: int
     :return: dictionary of global state for given application
     :rtype: dict
     """
 
-    application_info = client.application_info(app_id)
+    try:
+        application_info = indexer_client.applications(app_id).get("application", {})
+    except:
+        raise Exception("Application does not exist.")
+
     application_global_state = application_info["params"]["global-state"]
     formatted_global_state = {}
     for keyvalue in application_global_state:
@@ -194,18 +209,23 @@ def read_global_state(client, app_id):
     return formatted_global_state
 
 
-
-def get_global_state(client, app_id):
+def get_global_state(indexer_client, app_id):
     """Returns dict of global state for application with the given app_id
 
-    :param client: algod client
-    :type client: :class:`AlgodClient`
+    :param indexer_client: indexer client
+    :type indexer_client: :class:`IndexerClient`
     :param app_id: id of the application
     :type app_id: int
     :return: dict of global state for application with id app_id
     :rtype: dict
     """
-    return format_state(client.application_info(app_id)["params"]['global-state'])
+
+    try:
+        application_info = indexer_client.applications(app_id).get("application", {})
+    except:
+        raise Exception("Application does not exist.")
+
+    return format_state(application_info["params"]["global-state"])
 
 
 def get_staking_contracts(chain):

@@ -2,17 +2,18 @@ import json
 import base64
 from algosdk import encoding
 from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 from ..utils import read_local_state, get_global_state
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
 class Asset:
 
-    def __init__(self, algod_client: AlgodClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
+    def __init__(self, indexer_client: IndexerClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
         """Constructor me.
 
-        :param algod_client: a :class:`AlgodClient` for interacting with the network
-        :type algod_client: :class:`AlgodClient`
+        :param indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type indexer_client: :class:`IndexerClient`
         :param underlying_asset_id: underlying asset id
         :type int
         :param bank_asset_id: bank asset id
@@ -25,13 +26,27 @@ class Asset:
         :type int
         """
 
-        self.algod = algod_client
+        self.indexer = indexer_client
 
         # asset info
         self.underlying_asset_id = underlying_asset_id
-        self.underlying_asset_info = self.algod.asset_info(underlying_asset_id)["params"] if underlying_asset_id != 1 else {"decimals":6}
         self.bank_asset_id = bank_asset_id
-        self.bank_asset_info = self.algod.asset_info(bank_asset_id)["params"]
+
+        if underlying_asset_id != 1:
+            try:
+                underlying_asset_info = self.indexer.asset_info(underlying_asset_id).get("asset",{})
+                self.underlying_asset_info = underlying_asset_info["params"]
+            except:
+                raise Exception("Asset with id " + str(underlying_asset_id) + " does not exist.")
+        else:
+            self.underlying_asset_info = {"decimals":6}
+
+        try:
+            bank_asset_info = self.indexer.asset_info(bank_asset_id).get("asset",{})
+        except:
+            raise Exception("Asset with id " + str(bank_asset_id) + " does not exist.")
+
+        self.bank_asset_info = bank_asset_info["params"]
         
         # oracle info
         if oracle_app_id != None:
@@ -105,7 +120,7 @@ class Asset:
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        return get_global_state(self.algod, self.oracle_app_id)[self.oracle_price_field]
+        return get_global_state(self.indexer, self.oracle_app_id)[self.oracle_price_field]
     
     def get_underlying_decimals(self):
         """Returns decimals of asset
@@ -136,3 +151,13 @@ class Asset:
         """
         price = self.get_price()
         return float(amount * price / (10**self.get_underlying_decimals()))
+
+    def get_scaled_amount(self, amount):
+        """Returns an integer representation of asset amount scaled by asset's decimals
+        :param amount: amount of asset
+        :type amount: float
+        :return: int amount of asset scaled by decimals
+        :rtype: int
+        """
+
+        return int(amount * 10**(self.underlying_asset_info['decimals']))
