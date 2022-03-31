@@ -509,6 +509,7 @@ class Client:
 
     def prepare_liquidate_transactions(self, target_storage_address, borrow_symbol, amount, collateral_symbol, address=None):
         """Returns a liquidate transaction group
+        NOTE: seizing vALGO collateral returns ALGOs not bAssets. all other markets return bAssets.
         
         :param target_storage_address: storage address to liquidate
         :type target_storage_address: string

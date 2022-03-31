@@ -14,6 +14,7 @@ def prepare_liquidate_transactions(sender, suggested_params, storage_account, li
     account address of the borrow market. Then, the account of the collateral market is authorized 
     to credit the liquidator with a greater value of the liquidatee's collateral. The liquidator can
     then remove collateral to underlying to convert the collateral to assets.
+    NOTE: seizing vALGO collateral returns ALGOs not bAssets. all other markets return bAssets.
 
     :param sender: account address for the sender (liquidator)
     :type sender: string
