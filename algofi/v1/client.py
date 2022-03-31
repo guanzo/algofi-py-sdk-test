@@ -340,7 +340,7 @@ class Client:
 
     # INDEXER HELPERS
 
-    def get_storage_accounts(self, staking_contract_name=None):
+    def get_storage_accounts(self, staking_contract_name=None, verbose=False):
         """Returns a list of storage accounts for the given manager app id
 
         :return: list of storage accounts
@@ -354,7 +354,7 @@ class Client:
             app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
         while next_page is not None:
             account_data = self.indexer.accounts(limit=1000, next_page=next_page, application_id=app_id)
-            accounts.extend([account["address"] for account in account_data["accounts"]])
+            accounts.extend([(account if verbose else account["address"]) for account in account_data["accounts"]])
             if "next-token" in account_data:
                 next_page = account_data["next-token"]
             else:
