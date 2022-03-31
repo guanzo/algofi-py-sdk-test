@@ -9,7 +9,7 @@ setuptools.setup(
     description="Algofi Lending Protocol Python SDK",
     author="Algofi",
     author_email="founders@algofi.org",
-    version="1.0.2",
+    version="1.0.3",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
