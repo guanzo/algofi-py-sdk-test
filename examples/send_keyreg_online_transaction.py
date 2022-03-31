@@ -30,17 +30,26 @@ print("Processing send_keyreg_transaction transaction")
 print("~"*100)
 
 # NOTE: input participation information for storage account
-vote_pk = "4mLkQ20HT/2UcodHSYyQ6D+E6fDAxHfGQ/GswXJokAw="
-selection_pk = "U6aglCc1TeF/9Vrymhxmmz9AtEyMm7WAmIOEi5s1s28="
-state_proof_pk = "rPftDYUnSa/7ueokwm0WF4QiU2mYMODqh5SGS3lq56XHmaHeRY8EfSe3ud2y5w4pAg3eryEWEhz3w/HkkvNDsg=="
-vote_pk = base64.b64decode(vote_pk)
-selection_pk = base64.b64decode(selection_pk)
-state_proof_pk = base64.b64decode(state_proof_pk)
-vote_first = 20099552
-vote_last = 20199598
-vote_key_dilution = 316
+# Generate a participation key set for the vault address
+# NOTE: participation keys must be generated for the vault address (vault_address), not the primary address (sender)
+# Follow the tutorial here: https://docs.algofi.org/vault/tutorial/participating-in-consensus
+# Registration returns the voting key, selection key, state proof key, first round, last round, and vote key dilution
+# Fill these data into the variables below
 
-txn = client.prepare_send_keyreg_online_transactions(vote_pk, selection_pk, state_proof_pk, vote_first, vote_last, vote_key_dilution, sender)
+address = sender
+vault_address = client.manager.get_storage_address(address)
+
+#vote_pk = ""
+#selection_pk = ""
+#state_proof_pk = ""
+#vote_pk = base64.b64decode(vote_pk)
+#selection_pk = base64.b64decode(selection_pk)
+#state_proof_pk = base64.b64decode(state_proof_pk)
+#vote_first = 0
+#vote_last = 0
+#vote_key_dilution = 0
+
+txn = client.prepare_send_keyreg_online_transactions(vote_pk, selection_pk, state_proof_pk, vote_first, vote_last, vote_key_dilution, address=address)
 txn.sign_with_private_key(sender, key)
 txn.submit(client.algod, wait=True)
 
