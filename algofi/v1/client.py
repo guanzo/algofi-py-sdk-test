@@ -348,17 +348,33 @@ class Client:
         """
         next_page = ""
         accounts = []
+        user_address = base64.b64encode(bytes(manager_strings.user_address, "utf-8")).decode("utf-8")
+
         if staking_contract_name is None:
             app_id = list(self.get_active_markets().values())[0].get_market_app_id()
         else:
             app_id = self.get_staking_contract(staking_contract_name).get_manager_app_id()
+
         while next_page is not None:
             account_data = self.indexer.accounts(limit=1000, next_page=next_page, application_id=app_id)
-            accounts.extend([(account if verbose else account["address"]) for account in account_data["accounts"]])
+            # filter on accounts with b'ua' in their local state for app_id
+            accounts_filtered = []
+            for account in account_data["accounts"]:
+                user_local_state = account.get("apps-local-state",[])
+                for app_local_state in user_local_state:
+                    if app_local_state["id"] == self.manager.manager_app_id:
+                        fields = app_local_state.get("key-value", [])
+                        for field in fields:
+                            key = field.get("key", None)
+                            if key == user_address:
+                                accounts_filtered.append(account)
+            accounts.extend([(account if verbose else account["address"]) for account in accounts_filtered])
+
             if "next-token" in account_data:
                 next_page = account_data["next-token"]
             else:
                 next_page = None
+
         return accounts
 
     # TRANSACTION HELPERS
