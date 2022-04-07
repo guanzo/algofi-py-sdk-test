@@ -184,23 +184,63 @@ def read_local_state(indexer_client, address, app_id, block=None):
     return {}
 
 
-def read_global_state(indexer_client, app_id):
+def read_global_state(indexer_client, app_id, block=None):
     """Returns dict of global state for application with the given app_id
 
     :param indexer_client: indexer client
     :type indexer_client: :class:`IndexerClient`
     :param app_id: id of the application
     :type app_id: int
+    :param block: block at which to query historical data
+    :type block: int, optional
     :return: dict of global state for application with id app_id
     :rtype: dict
     """
 
     try:
-        application_info = indexer_client.applications(app_id).get("application", {})
+        application_info = indexer_client.applications(app_id, round_num=block).get("application", {})
     except:
         raise Exception("Application does not exist.")
 
     return format_state(application_info["params"]["global-state"])
+
+
+def search_global_state(global_state, search_key):
+    """Returns value from the encoded global state dict of an application
+
+    :param global_state: global state of an application
+    :type global_state: dict
+    :param search_key: utf8 key of a value to search for
+    :type search_key: string
+    :return: value for the given key
+    :rtype: byte or int
+    """
+    for field in global_state:
+        key, value = field['key'], field['value']
+        if search_key == b64decode(key).decode():
+            if value['type'] == 2:
+                value = value['uint']
+            else:
+                value = value['bytes']
+            return value
+    raise Exception("Key not found")
+
+
+def get_global_state_field(indexer_client, app_id, field_name, block=None):
+    """Returns field of global state for application with the given app_id
+
+    :param indexer_client: indexer client
+    :type indexer_client: :class:`IndexerClient`
+    :param app_id: id of the application
+    :type app_id: int
+    :param block: block at which to query historical data
+    :type block: int, optional
+    :return: value of global state variable for app
+    :rtype: dict
+    """
+
+    data = read_global_state(indexer_client, app_id, block=block)
+    return search_global_state(data, field_name)
 
 
 def get_staking_contracts(chain):
@@ -315,26 +355,6 @@ def get_new_account():
     key, address = account.generate_account()
     passphrase = mnemonic.from_private_key(key)
     return (key, address, passphrase)
-
-def search_global_state(global_state, search_key):
-    """Returns value from the encoded global state dict of an application
-
-    :param global_state: global state of an application
-    :type global_state: dict
-    :param search_key: utf8 key of a value to search for
-    :type search_key: string
-    :return: value for the given key
-    :rtype: byte or int
-    """
-    for field in global_state:
-        key, value = field['key'], field['value']
-        if search_key == b64decode(key).decode():
-            if value['type'] == 2:
-                value = value['uint']
-            else:
-                value = value['bytes']
-            return value
-    raise Exception("Key not found")
 
 
 class TransactionGroup:

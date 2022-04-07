@@ -30,10 +30,14 @@ class Market:
         # read market global state
         self.update_global_state()
     
-    def update_global_state(self):
+    def update_global_state(self, block=None):
         """Method to fetch most recent market global state.
+
+        :param block: block at which to get historical data
+        :type block: int, optional
         """
-        market_state = read_global_state(self.indexer, self.market_app_id)
+        
+        market_state = read_global_state(self.indexer, self.market_app_id, block=block)
         # market constants
         self.market_counter = market_state[market_strings.manager_market_counter_var]
         
@@ -114,13 +118,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.active_collateral)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.active_collateral, block=block)
         else:
             return self.active_collateral
 
@@ -133,13 +131,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.bank_circulation)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.bank_circulation, block=block)
         else:
             return self.bank_circulation
 
@@ -152,13 +144,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.bank_to_underlying_exchange)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.bank_to_underlying_exchange, block=block)
         else:
             return self.bank_to_underlying_exchange
 
@@ -171,13 +157,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_borrowed)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_borrowed, block=block)
         else:
             return self.underlying_borrowed
 
@@ -190,13 +170,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.outstanding_borrow_shares)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.outstanding_borrow_shares, block=block)
         else:
             return self.outstanding_borrow_shares
 
@@ -209,13 +183,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_cash)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_cash, block=block)
         else:
             return self.underlying_cash
 
@@ -228,13 +196,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_reserves)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_reserves, block=block)
         else:
             return self.underlying_reserves
 
@@ -247,13 +209,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.total_borrow_interest_rate)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.total_borrow_interest_rate, block=block)
         else:
             return self.total_borrow_interest_rate
     
@@ -266,13 +222,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.collateral_factor)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.collateral_factor, block=block)
         else:
             return self.collateral_factor
 
@@ -285,13 +235,7 @@ class Market:
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.liquidation_incentive)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.liquidation_incentive, block=block)
         else:
             return self.liquidation_incentive
 
