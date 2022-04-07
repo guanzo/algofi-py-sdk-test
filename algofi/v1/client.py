@@ -73,7 +73,7 @@ class Client:
         self.max_atomic_opt_in_ordered_symbols = get_ordered_symbols(self.chain, max_atomic_opt_in=True)
         
         # manager info
-        self.manager = Manager(self.indexer, get_manager_app_id(self.chain))
+        self.manager = Manager(self.indexer, self.historical_indexer, get_manager_app_id(self.chain))
         
         # market info
         self.markets = {symbol : Market(self.indexer, self.historical_indexer, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
@@ -194,11 +194,12 @@ class Client:
             result[symbol] = self.markets[symbol].get_storage_state(storage_address)
         return result
     
-    def get_storage_state(self, storage_address=None):
+    def get_storage_state(self, storage_address=None, block=None):
         """Returns a dictionary with the lending market state for a given storage address
 
         :param storage_address: address to get info for. If None will use address supplied when creating client
         :type storage_address: string
+
         :return: state
         :rtype: dict
         """

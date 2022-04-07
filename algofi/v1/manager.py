@@ -9,16 +9,19 @@ from ..contract_strings import algofi_market_strings as market_strings
 from .rewards_program import RewardsProgram
 
 class Manager:
-    def __init__(self, indexer_client: IndexerClient, manager_app_id):
+    def __init__(self, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, manager_app_id):
         """Constructor method for manager object.
 
         :param indexer_client: a :class:`IndexerClient` for interacting with the network
         :type indexer_client: :class:`IndexerClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         :param manager_app_id: manager app id
         :type manager_app_id: int
         """
 
         self.indexer = indexer_client
+        self.historical_indexer = historical_indexer_client
 
         self.manager_app_id = manager_app_id
         self.manager_address = logic.get_application_address(self.manager_app_id)
@@ -26,11 +29,15 @@ class Manager:
         # read market global state
         self.update_global_state()
     
-    def update_global_state(self):
+    def update_global_state(self, block=None):
         """Method to fetch most recent manager global state.
+
+        :param block: block at which to get historical data
+        :type block: int, optional
         """
-        manager_state = read_global_state(self.indexer, self.manager_app_id)
-        self.rewards_program = RewardsProgram(self.indexer, manager_state)
+        indexer_client = self.historical_indexer if block else self.indexer
+        manager_state = read_global_state(indexer_client, self.manager_app_id, block=block)
+        self.rewards_program = RewardsProgram(self.indexer, self.historical_indexer, manager_state)
     
     # GETTERS
     
@@ -74,27 +81,32 @@ class Manager:
             raise Exception("No storage address found")
         return encoding.encode_address(base64.b64decode(raw_storage_address.strip()))
     
-    def get_user_state(self, address):
+    def get_user_state(self, address, block=None):
         """Returns the market local state for address.
 
         :param address: address to get info for
         :type address: string
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: market local state for address
         :rtype: dict
         """
         storage_address = self.get_storage_address(address)
-        return self.get_storage_state(storage_address)
+        return self.get_storage_state(storage_address, block=block)
     
-    def get_storage_state(self, storage_address):
+    def get_storage_state(self, storage_address, block=None):
         """Returns the market local state for storage address.
 
         :param storage_address: storage_address to get info for
         :type storage_address: string
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: market local state for address
         :rtype: dict
         """
         result = {}
-        user_state = read_local_state(self.indexer, storage_address, self.manager_app_id)
+        indexer_client = self.historical_indexer if block else self.indexer
+        user_state = read_local_state(indexer_client, storage_address, self.manager_app_id, block=block)
         result["user_global_max_borrow_in_dollars"] = user_state.get(manager_strings.user_global_max_borrow_in_dollars, 0) 
         result["user_global_borrowed_in_dollars"] = user_state.get(manager_strings.user_global_borrowed_in_dollars, 0)
         return result

@@ -205,27 +205,6 @@ def read_global_state(indexer_client, app_id, block=None):
     return format_state(application_info["params"]["global-state"])
 
 
-def search_global_state(global_state, search_key):
-    """Returns value from the encoded global state dict of an application
-
-    :param global_state: global state of an application
-    :type global_state: dict
-    :param search_key: utf8 key of a value to search for
-    :type search_key: string
-    :return: value for the given key
-    :rtype: byte or int
-    """
-    for field in global_state:
-        key, value = field['key'], field['value']
-        if search_key == b64decode(key).decode():
-            if value['type'] == 2:
-                value = value['uint']
-            else:
-                value = value['bytes']
-            return value
-    raise Exception("Key not found")
-
-
 def get_global_state_field(indexer_client, app_id, field_name, block=None):
     """Returns field of global state for application with the given app_id
 
@@ -240,8 +219,10 @@ def get_global_state_field(indexer_client, app_id, field_name, block=None):
     """
 
     data = read_global_state(indexer_client, app_id, block=block)
-    return search_global_state(data, field_name)
-
+    if field_name in data:
+        return data[field_name]
+    else:
+        raise Exception("Key not found")
 
 def get_staking_contracts(chain):
     """Returns list of supported staking contracts for the specified chain. Pulled from hardcoded values in contracts.json.

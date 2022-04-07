@@ -25,17 +25,21 @@ class StakingContract:
         self.indexer = indexer_client
         self.historical_indexer = historical_indexer_client
 
-        self.manager = Manager(self.indexer, staking_contract_info.get("managerAppId"))
+        self.manager = Manager(self.indexer, self.historical_indexer, staking_contract_info.get("managerAppId"))
         self.market = Market(self.indexer, self.historical_indexer, staking_contract_info.get("marketAppId"))
         
         # read manager and market global state
         self.update_global_state()
     
-    def update_global_state(self):
+    def update_global_state(self, block=None):
         """Method to fetch most recent staking contract global state
+
+        :param block: block at which to get historical data
+        :type block: int, optional
         """
-        self.get_manager().update_global_state()
-        self.get_market().update_global_state()
+        indexer_client = self.historical_indexer if block else self.indexer
+        self.get_manager().update_global_state(block=block)
+        self.get_market().update_global_state(block=block)
 
     # GETTERS
     
