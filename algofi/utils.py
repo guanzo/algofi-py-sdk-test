@@ -156,7 +156,7 @@ def format_state(state):
     return formatted
 
 
-def read_local_state(indexer_client, address, app_id):
+def read_local_state(indexer_client, address, app_id, block=None):
     """Returns dict of local state for address for application with id app_id
 
     :param indexer_client: indexer client
@@ -165,12 +165,14 @@ def read_local_state(indexer_client, address, app_id):
     :type address: string
     :param app_id: id of the application
     :type app_id: int
+    :param block: block at which to get the historical local state
+    :type block: int, optional
     :return: dict of local state of address for application with id app_id
     :rtype: dict
     """
     
     try:
-        results = indexer_client.account_info(address).get("account", {})
+        results = indexer_client.account_info(address, round_num=block).get("account", {})
     except:
         raise Exception("Account does not exist.")
 
@@ -183,33 +185,6 @@ def read_local_state(indexer_client, address, app_id):
 
 
 def read_global_state(indexer_client, app_id):
-    """Returns dictionary of global state for a given application
-
-    :param indexer_client: :class:`IndexerClient` object for interacting with network
-    :type indexer_client: :class:`IndexerClient`
-    :param app_id: application id
-    :type app_id: int
-    :return: dictionary of global state for given application
-    :rtype: dict
-    """
-
-    try:
-        application_info = indexer_client.applications(app_id).get("application", {})
-    except:
-        raise Exception("Application does not exist.")
-
-    application_global_state = application_info["params"]["global-state"]
-    formatted_global_state = {}
-    for keyvalue in application_global_state:
-        key, value = keyvalue["key"], keyvalue["value"]
-        key_formatted = b64decode(key).decode("utf-8")
-        value = value["uint"] if value["type"] == 2 else value["bytes"]
-        formatted_global_state[key_formatted] = value
-
-    return formatted_global_state
-
-
-def get_global_state(indexer_client, app_id):
     """Returns dict of global state for application with the given app_id
 
     :param indexer_client: indexer client

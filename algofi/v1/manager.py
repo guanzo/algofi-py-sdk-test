@@ -3,7 +3,7 @@ import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR
+from ..utils import read_local_state, read_global_state, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .rewards_program import RewardsProgram
@@ -29,7 +29,7 @@ class Manager:
     def update_global_state(self):
         """Method to fetch most recent manager global state.
         """
-        manager_state = get_global_state(self.indexer, self.manager_app_id)
+        manager_state = read_global_state(self.indexer, self.manager_app_id)
         self.rewards_program = RewardsProgram(self.indexer, manager_state)
     
     # GETTERS
