@@ -161,3 +161,13 @@ class Asset:
         """
 
         return int(amount * 10**(self.underlying_asset_info['decimals']))
+
+    def get_decimal_amount(self, amount):
+        """Returns an decimal representation of asset amount devided by asset's decimals
+        :param amount: amount of asset
+        :type amount: float
+        :return: int amount of asset divided by decimals
+        :rtype: int
+        """
+
+        return int(amount / 10**(self.underlying_asset_info['decimals']))

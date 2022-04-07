@@ -3,7 +3,7 @@ import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, read_global_state, SCALE_FACTOR
+from ..utils import read_local_state, read_global_state, get_global_state_field, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .rewards_program import RewardsProgram
@@ -38,6 +38,7 @@ class Manager:
         indexer_client = self.historical_indexer if block else self.indexer
         manager_state = read_global_state(indexer_client, self.manager_app_id, block=block)
         self.rewards_program = RewardsProgram(self.indexer, self.historical_indexer, manager_state)
+        self.supported_market_count = manager_state.get(manager_strings.supported_market_count, None)
     
     # GETTERS
     
@@ -64,6 +65,19 @@ class Manager:
         :rtype: :class:`RewardsProgram
         """
         return self.rewards_program
+    
+    def get_supported_market_count(self, block=None):
+        """Return the supported market count
+        
+        :param block: block at which to get historical data
+        :type block: int, optional
+        :return: supported market count
+        :rtype: int
+        """
+        if block:
+            return get_global_state_field(self.historical_indexer, self.manager_app_id, manager_strings.supported_market_count, block=block)
+        else:
+            return self.supported_market_count
 
     # USER FUNCTIONS
     

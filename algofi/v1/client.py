@@ -194,7 +194,7 @@ class Client:
             result[symbol] = self.markets[symbol].get_storage_state(storage_address)
         return result
     
-    def get_storage_state(self, storage_address=None, block=None):
+    def get_storage_state(self, storage_address=None, block=None, include_manager=True):
         """Returns a dictionary with the lending market state for a given storage address
 
         :param storage_address: address to get info for. If None will use address supplied when creating client
@@ -206,9 +206,12 @@ class Client:
         result = {}
         if not storage_address:
             storage_address = self.manager.get_storage_address(self.user_address)
-        result["manager"] = self.manager.get_storage_state(storage_address)
-        for symbol in self.active_ordered_symbols:
-            result[symbol] = self.markets[symbol].get_storage_state(storage_address)
+        if include_manager:
+            result["manager"] = self.manager.get_storage_state(storage_address, block=block)
+        supported_market_count = self.manager.get_supported_market_count(block=block)
+        active_markets = self.active_ordered_symbols[:supported_market_count]
+        for symbol in active_markets:
+            result[symbol] = self.markets[symbol].get_storage_state(storage_address, block=block)
         return result
     
     def get_user_staking_contract_state(self, staking_contract_name, address=None):
