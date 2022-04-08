@@ -73,7 +73,7 @@ class Client:
         self.max_atomic_opt_in_ordered_symbols = get_ordered_symbols(self.chain, max_atomic_opt_in=True)
         
         # manager info
-        self.manager = Manager(self.indexer, get_manager_app_id(self.chain))
+        self.manager = Manager(self.indexer, self.historical_indexer, get_manager_app_id(self.chain))
         
         # market info
         self.markets = {symbol : Market(self.indexer, self.historical_indexer, get_market_app_id(self.chain, symbol)) for symbol in self.max_ordered_symbols}
@@ -194,20 +194,24 @@ class Client:
             result[symbol] = self.markets[symbol].get_storage_state(storage_address)
         return result
     
-    def get_storage_state(self, storage_address=None):
+    def get_storage_state(self, storage_address=None, block=None, include_manager=True):
         """Returns a dictionary with the lending market state for a given storage address
 
         :param storage_address: address to get info for. If None will use address supplied when creating client
         :type storage_address: string
+
         :return: state
         :rtype: dict
         """
         result = {}
         if not storage_address:
             storage_address = self.manager.get_storage_address(self.user_address)
-        result["manager"] = self.manager.get_storage_state(storage_address)
-        for symbol in self.active_ordered_symbols:
-            result[symbol] = self.markets[symbol].get_storage_state(storage_address)
+        if include_manager:
+            result["manager"] = self.manager.get_storage_state(storage_address, block=block)
+        supported_market_count = self.manager.get_supported_market_count(block=block)
+        active_markets = self.active_ordered_symbols[:supported_market_count]
+        for symbol in active_markets:
+            result[symbol] = self.markets[symbol].get_storage_state(storage_address, block=block)
         return result
     
     def get_user_staking_contract_state(self, staking_contract_name, address=None):

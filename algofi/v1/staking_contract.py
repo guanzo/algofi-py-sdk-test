@@ -3,7 +3,7 @@ import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR
+from ..utils import read_local_state, read_global_state, SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .asset import Asset
@@ -25,17 +25,21 @@ class StakingContract:
         self.indexer = indexer_client
         self.historical_indexer = historical_indexer_client
 
-        self.manager = Manager(self.indexer, staking_contract_info.get("managerAppId"))
+        self.manager = Manager(self.indexer, self.historical_indexer, staking_contract_info.get("managerAppId"))
         self.market = Market(self.indexer, self.historical_indexer, staking_contract_info.get("marketAppId"))
         
         # read manager and market global state
         self.update_global_state()
     
-    def update_global_state(self):
+    def update_global_state(self, block=None):
         """Method to fetch most recent staking contract global state
+
+        :param block: block at which to get historical data
+        :type block: int, optional
         """
-        self.get_manager().update_global_state()
-        self.get_market().update_global_state()
+        indexer_client = self.historical_indexer if block else self.indexer
+        self.get_manager().update_global_state(block=block)
+        self.get_market().update_global_state(block=block)
 
     # GETTERS
     

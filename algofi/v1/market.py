@@ -3,7 +3,7 @@ import base64
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR, PARAMETER_SCALE_FACTOR, search_global_state
+from ..utils import read_local_state, read_global_state, get_global_state_field, SCALE_FACTOR, PARAMETER_SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 from .asset import Asset
@@ -30,10 +30,14 @@ class Market:
         # read market global state
         self.update_global_state()
     
-    def update_global_state(self):
+    def update_global_state(self, block=None):
         """Method to fetch most recent market global state.
+
+        :param block: block at which to get historical data
+        :type block: int, optional
         """
-        market_state = get_global_state(self.indexer, self.market_app_id)
+        indexer_client = self.historical_indexer if block else self.indexer
+        market_state = read_global_state(indexer_client, self.market_app_id, block=block)
         # market constants
         self.market_counter = market_state[market_strings.manager_market_counter_var]
         
@@ -105,135 +109,159 @@ class Market:
         """
         return self.asset
     
-    def get_active_collateral(self):
+    def get_active_collateral(self, block=None):
         """Returns active_collateral for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: active_collateral
         :rtype: int
         """
-        return self.active_collateral
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.active_collateral, block=block)
+        else:
+            return self.active_collateral
 
-    def get_bank_circulation(self):
+    def get_bank_circulation(self, block=None):
         """Returns bank_circulation for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: bank_circulation
         :rtype: int
         """
-        return self.bank_circulation
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.bank_circulation, block=block)
+        else:
+            return self.bank_circulation
 
-    def get_bank_to_underlying_exchange(self):
+    def get_bank_to_underlying_exchange(self, block=None):
         """Returns bank_to_underlying_exchange for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: bank_to_underlying_exchange
         :rtype: int
         """
-        return self.bank_to_underlying_exchange
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.bank_to_underlying_exchange, block=block)
+        else:
+            return self.bank_to_underlying_exchange
 
     def get_underlying_borrowed(self, block=None):
         """Returns underlying_borrowed for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: underlying_borrowed
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_borrowed)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_borrowed, block=block)
         else:
             return self.underlying_borrowed
 
-    def get_outstanding_borrow_shares(self):
+    def get_outstanding_borrow_shares(self, block=None):
         """Returns outstanding_borrow_shares for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: outstanding_borrow_shares
         :rtype: int
         """
-        return self.outstanding_borrow_shares
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.outstanding_borrow_shares, block=block)
+        else:
+            return self.outstanding_borrow_shares
 
     def get_underlying_cash(self, block=None):
         """Returns underlying_cash for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: underlying_cash
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_cash)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_cash, block=block)
         else:
             return self.underlying_cash
 
     def get_underlying_reserves(self, block=None):
         """Returns underlying_reserves for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: underlying_reserves
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.underlying_reserves)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.underlying_reserves, block=block)
         else:
             return self.underlying_reserves
 
     def get_total_borrow_interest_rate(self, block=None):
         """Returns total_borrow_interest_rate for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: total_borrow_interest_rate
         :rtype: int
         """
         if block:
-            try:
-                data = self.historical_indexer.applications(application_id=self.market_app_id, round_num=block)
-                data = data["application"]["params"]["global-state"]
-                return search_global_state(data, market_strings.total_borrow_interest_rate)
-            except:
-                raise Exception("Issue getting data")
-            
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.total_borrow_interest_rate, block=block)
         else:
             return self.total_borrow_interest_rate
     
-    def get_collateral_factor(self):
+    def get_collateral_factor(self, block=None):
         """Returns collateral_factor for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: collateral_factor
         :rtype: int
         """
-        return self.collateral_factor
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.collateral_factor, block=block)
+        else:
+            return self.collateral_factor
 
-    def get_liquidation_incentive(self):
+    def get_liquidation_incentive(self, block=None):
         """Returns liquidation_incentive for this market
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: liquidation_incentive
         :rtype: int
         """
-        return self.liquidation_incentive
+        if block:
+            return get_global_state_field(self.historical_indexer, self.market_app_id, market_strings.liquidation_incentive, block=block)
+        else:
+            return self.liquidation_incentive
 
     # USER FUNCTIONS
     
-    def get_storage_state(self, storage_address):
+    def get_storage_state(self, storage_address, block=None):
         """Returns the market local state for address.
 
         :param storage_address: storage_address to get info for
         :type storage_address: string
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: market local state for address
         :rtype: dict
         """
         result = {}
-        user_state = read_local_state(self.indexer, storage_address, self.market_app_id)
         asset = self.get_asset()
+        indexer_client = self.historical_indexer if block else self.indexer
+
+        # load user local state
+        user_state = read_local_state(indexer_client, storage_address, self.market_app_id, block=block)
+
+        # load global state variables
+        if block:
+            self.update_global_state(block=block)
+
         result["active_collateral_bank"] = user_state.get(market_strings.user_active_collateral, 0)
         result["active_collateral_underlying"] = int(result["active_collateral_bank"] * self.bank_to_underlying_exchange / SCALE_FACTOR)
         result["active_collateral_usd"] = asset.to_usd(result["active_collateral_underlying"])

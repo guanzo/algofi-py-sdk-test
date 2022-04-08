@@ -3,7 +3,7 @@ import base64
 from algosdk import encoding
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, get_global_state
+from ..utils import read_local_state, read_global_state
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
@@ -120,7 +120,7 @@ class Asset:
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        return get_global_state(self.indexer, self.oracle_app_id)[self.oracle_price_field]
+        return read_global_state(self.indexer, self.oracle_app_id)[self.oracle_price_field]
     
     def get_underlying_decimals(self):
         """Returns decimals of asset
@@ -161,3 +161,13 @@ class Asset:
         """
 
         return int(amount * 10**(self.underlying_asset_info['decimals']))
+
+    def get_decimal_amount(self, amount):
+        """Returns an decimal representation of asset amount devided by asset's decimals
+        :param amount: amount of asset
+        :type amount: float
+        :return: int amount of asset divided by decimals
+        :rtype: int
+        """
+
+        return (amount / 10**(self.underlying_asset_info['decimals']))

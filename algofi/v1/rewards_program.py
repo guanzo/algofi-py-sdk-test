@@ -3,21 +3,25 @@ import base64
 import time
 from algosdk import encoding, logic
 from algosdk.v2client.algod import AlgodClient
-from ..utils import read_local_state, get_global_state, SCALE_FACTOR, REWARDS_SCALE_FACTOR, PARAMETER_SCALE_FACTOR
+from algosdk.v2client.indexer import IndexerClient
+from ..utils import read_local_state, read_global_state, SCALE_FACTOR, REWARDS_SCALE_FACTOR, PARAMETER_SCALE_FACTOR
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
 class RewardsProgram:
-    def __init__(self, indexer_client, manager_state):
+    def __init__(self, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, manager_state):
         """Constructor method for manager object.
 
         :param indexer_client: a :class:`IndexerClient` for interacting with the network
         :type indexer_client: :class:`IndexerClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         :param manager_state: dictionary of manager global state
         :type manager_state: dict
         """
 
         self.indexer = indexer_client
+        self.historical_indexer = historical_indexer_client
 
         self.latest_rewards_time = manager_state.get(manager_strings.latest_rewards_time, 0)
         self.rewards_program_number = manager_state.get(manager_strings.n_rewards_programs, 0)
@@ -116,7 +120,7 @@ class RewardsProgram:
         :rtype: (int, int)
         """
         # get raw user state
-        manager_state = get_global_state(self.indexer, manager.get_manager_app_id())
+        manager_state = read_global_state(self.indexer, manager.get_manager_app_id())
         manager_storage_state = read_local_state(self.indexer, storage_address, manager.get_manager_app_id())
         on_current_program = self.get_rewards_program_number() == manager_storage_state.get(manager_strings.user_rewards_program_number, 0)
         total_unrealized_rewards = manager_storage_state.get(manager_strings.user_pending_rewards, 0) if on_current_program else 0
