@@ -170,4 +170,4 @@ class Asset:
         :rtype: int
         """
 
-        return int(amount / 10**(self.underlying_asset_info['decimals']))
+        return (amount / 10**(self.underlying_asset_info['decimals']))
