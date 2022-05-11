@@ -3,17 +3,19 @@ import base64
 from algosdk import encoding
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, read_global_state
+from ..utils import read_local_state, read_global_state, get_global_state_field
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
 class Asset:
 
-    def __init__(self, indexer_client: IndexerClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
+    def __init__(self, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
         """Constructor me.
 
         :param indexer_client: a :class:`IndexerClient` for interacting with the network
         :type indexer_client: :class:`IndexerClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         :param underlying_asset_id: underlying asset id
         :type int
         :param bank_asset_id: bank asset id
@@ -27,6 +29,7 @@ class Asset:
         """
 
         self.indexer = indexer_client
+        self.historical_indexer = historical_indexer_client
 
         # asset info
         self.underlying_asset_id = underlying_asset_id
@@ -112,15 +115,20 @@ class Asset:
         """
         return self.oracle_price_scale_factor
     
-    def get_raw_price(self):
+    def get_raw_price(self, block=None):
         """Returns the current raw oracle price
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: oracle price
         :rtype: int
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        return read_global_state(self.indexer, self.oracle_app_id)[self.oracle_price_field]
+        if block:
+            return get_global_state_field(self.historical_indexer, self.oracle_app_id, self.oracle_price_field, block=block)
+        else:
+            return get_global_state_field(self.indexer, self.oracle_app_id, self.oracle_price_field)
     
     def get_underlying_decimals(self):
         """Returns decimals of asset
@@ -130,26 +138,30 @@ class Asset:
         """
         return self.underlying_asset_info['decimals']
     
-    def get_price(self):
+    def get_price(self, block=None):
         """Returns the current oracle price
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: oracle price
         :rtype: int
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        raw_price = self.get_raw_price()
+        raw_price = self.get_raw_price(block=block)
         return float((raw_price * 10**self.get_underlying_decimals()) / (self.get_oracle_price_scale_factor() * 1e3))
     
-    def to_usd(self, amount):
+    def to_usd(self, amount, block=None):
         """Return the usd value of the underlying amount (base units)
         
         :param amount: integer amount of base underlying units
         :type amount: int
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: usd value
         :rtype: float
         """
-        price = self.get_price()
+        price = self.get_price(block=block)
         return float(amount * price / (10**self.get_underlying_decimals()))
 
     def get_scaled_amount(self, amount):
