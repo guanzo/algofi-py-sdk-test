@@ -3,17 +3,19 @@ import base64
 from algosdk import encoding
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
-from ..utils import read_local_state, read_global_state
+from ..utils import read_local_state, read_global_state, get_global_state_field
 from ..contract_strings import algofi_manager_strings as manager_strings
 from ..contract_strings import algofi_market_strings as market_strings
 
 class Asset:
 
-    def __init__(self, indexer_client: IndexerClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
+    def __init__(self, indexer_client: IndexerClient, historical_indexer_client: IndexerClient, underlying_asset_id, bank_asset_id, oracle_app_id=None, oracle_price_field=None, oracle_price_scale_factor=None):
         """Constructor me.
 
         :param indexer_client: a :class:`IndexerClient` for interacting with the network
         :type indexer_client: :class:`IndexerClient`
+        :param historical_indexer_client: a :class:`IndexerClient` for interacting with the network
+        :type historical_indexer_client: :class:`IndexerClient`
         :param underlying_asset_id: underlying asset id
         :type int
         :param bank_asset_id: bank asset id
@@ -27,6 +29,7 @@ class Asset:
         """
 
         self.indexer = indexer_client
+        self.historical_indexer = historical_indexer_client
 
         # asset info
         self.underlying_asset_id = underlying_asset_id

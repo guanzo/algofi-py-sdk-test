@@ -70,6 +70,7 @@ class Market:
         self.total_borrow_interest_rate = market_state.get(market_strings.total_borrow_interest_rate, 0)
     
         self.asset = Asset(self.indexer,
+                           self.historical_indexer, 
                            self.underlying_asset_id,
                            self.bank_asset_id,
                            self.oracle_app_id,
