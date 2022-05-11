@@ -112,15 +112,20 @@ class Asset:
         """
         return self.oracle_price_scale_factor
     
-    def get_raw_price(self):
+    def get_raw_price(self, block=None):
         """Returns the current raw oracle price
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: oracle price
         :rtype: int
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        return read_global_state(self.indexer, self.oracle_app_id)[self.oracle_price_field]
+        if block:
+            return get_global_state_field(self.historical_indexer, self.oracle_app_id, self.oracle_price_field, block=block)
+        else:
+            return get_global_state_field(self.indexer, self.oracle_app_id, self.oracle_price_field)
     
     def get_underlying_decimals(self):
         """Returns decimals of asset
@@ -130,26 +135,30 @@ class Asset:
         """
         return self.underlying_asset_info['decimals']
     
-    def get_price(self):
+    def get_price(self, block=None):
         """Returns the current oracle price
 
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: oracle price
         :rtype: int
         """
         if self.oracle_app_id == None:
             raise Exception("no oracle app id for asset")
-        raw_price = self.get_raw_price()
+        raw_price = self.get_raw_price(block=block)
         return float((raw_price * 10**self.get_underlying_decimals()) / (self.get_oracle_price_scale_factor() * 1e3))
     
-    def to_usd(self, amount):
+    def to_usd(self, amount, block=None):
         """Return the usd value of the underlying amount (base units)
         
         :param amount: integer amount of base underlying units
         :type amount: int
+        :param block: block at which to get historical data
+        :type block: int, optional
         :return: usd value
         :rtype: float
         """
-        price = self.get_price()
+        price = self.get_price(block=block)
         return float(amount * price / (10**self.get_underlying_decimals()))
 
     def get_scaled_amount(self, amount):
