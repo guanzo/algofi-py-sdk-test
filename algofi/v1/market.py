@@ -201,6 +201,26 @@ class Market:
         else:
             return self.underlying_reserves
 
+    def get_underlying_supplied(self, block=None):
+        """Returns underlying supplied = underlying_cash + underlying_borrowed - underlying_reserves for this market.
+        The mainnet STBL market was seeded with 1tn STBL, so this must be subtracted from the calculation.
+
+        :param block: block at which to get historical data
+        :type block: int, optional
+        :return: underlying supplied
+        :rtype: int
+        """
+
+        underlying_supplied = 0
+        if self.market_app_id == 465814278:
+            underlying_supplied += -int(1e18)
+        if block:
+            data = read_global_state(self.historical_indexer, self.market_app_id, block=block)
+            underlying_supplied += data[market_strings.underlying_cash] + data[market_strings.underlying_borrowed] + data[market_strings.underlying_reserves]
+        else:
+            underlying_supplied += self.underlying_cash + self.underlying_borrowed - self.underlying_reserves
+        return underlying_supplied
+
     def get_total_borrow_interest_rate(self, block=None):
         """Returns total_borrow_interest_rate for this market
 
