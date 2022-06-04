@@ -1,3 +1,4 @@
+from copy import deepcopy
 from algosdk import logic
 from algosdk.future.transaction import ApplicationOptInTxn, AssetOptInTxn, ApplicationNoOpTxn, PaymentTxn, AssetTransferTxn
 from ..contract_strings import algofi_manager_strings as manager_strings
@@ -216,9 +217,13 @@ def prepare_claim_staking_rewards_transactions(sender, suggested_params, storage
         supported_oracle_app_ids=supported_oracle_app_ids,
         storage_account=storage_account
     )
+
+    suggested_params_modified = deepcopy(suggested_params)
+    suggested_params_modified.fee = 3000
+
     txn0 = ApplicationNoOpTxn(
         sender=sender,
-        sp=suggested_params,
+        sp=suggested_params_modified,
         index=manager_app_id,
         app_args=[manager_strings.claim_rewards.encode()],
         accounts=[storage_account],
