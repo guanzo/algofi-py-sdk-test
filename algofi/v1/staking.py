@@ -6,14 +6,14 @@ from ..utils import TransactionGroup, Transactions, randint, int_to_bytes
 
 OPT_IN_MIN_BALANCE=0.65
 def prepare_staking_contract_optin_transactions(manager_app_id, market_app_id, sender, storage_address, suggested_params):
-    """Returns a :class:`TransactionGroup` object representing a staking contract opt in 
-    group transaction. The sender and storage account opt in to the staking application 
-    and the storage account is rekeyed to the manager account address, rendering it 
+    """Returns a :class:`TransactionGroup` object representing a staking contract opt in
+    group transaction. The sender and storage account opt in to the staking application
+    and the storage account is rekeyed to the manager account address, rendering it
     unable to be transacted against by the sender and therefore immutable.
 
     :param manager_app_id: id of the manager application
     :type manager_app_id: int
-    :param market_app_id: id of market application 
+    :param market_app_id: id of market application
     :type market_app_id: int
     :param sender: account address for the sender
     :type sender: string
@@ -52,7 +52,7 @@ def prepare_staking_contract_optin_transactions(manager_app_id, market_app_id, s
 
 def prepare_stake_transactions(sender, suggested_params, storage_account, amount, manager_app_id, market_app_id, market_address, oracle_app_id, asset_id=None):
     """Returns a :class:`TransactionGroup` object representing a stake
-    transaction against the algofi protocol. The sender sends assets to the 
+    transaction against the algofi protocol. The sender sends assets to the
     staking account and is credited with a stake.
 
     :param sender: account address for the sender
@@ -120,8 +120,8 @@ def prepare_stake_transactions(sender, suggested_params, storage_account, amount
     return txn_group
 
 def prepare_unstake_transactions(sender, suggested_params, storage_account, amount, manager_app_id, market_app_id, oracle_app_id, asset_id=None):
-    """Returns a :class:`TransactionGroup` object representing a remove stake 
-    group transaction against the algofi protocol. The sender requests to remove stake 
+    """Returns a :class:`TransactionGroup` object representing a remove stake
+    group transaction against the algofi protocol. The sender requests to remove stake
     from a stake acount and if successful, the stake is removed.
 
     :param sender: account address for the sender
@@ -184,8 +184,8 @@ def prepare_unstake_transactions(sender, suggested_params, storage_account, amou
 
 def prepare_claim_staking_rewards_transactions(sender, suggested_params, storage_account, manager_app_id, market_app_id, oracle_app_id, foreign_assets):
     """Returns a :class:`TransactionGroup` object representing a claim rewards
-    underlying group transaction against the algofi protocol. The sender requests 
-    to claim rewards from the manager acount. If not, the account sends 
+    underlying group transaction against the algofi protocol. The sender requests
+    to claim rewards from the manager acount. If not, the account sends
     back the user the amount of asset underlying their posted collateral.
 
     :param sender: account address for the sender
