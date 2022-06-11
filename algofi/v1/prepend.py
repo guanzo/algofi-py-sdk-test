@@ -1,5 +1,5 @@
 from copy import deepcopy
-from random import randint
+from random import randint, randrange
 from algosdk.future.transaction import ApplicationNoOpTxn
 from ..utils import Transactions
 from ..contract_strings import algofi_manager_strings as manager_strings
@@ -10,10 +10,10 @@ NUM_DUMMY_TXNS = 9
 dummy_txn_num_to_word = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 
 def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, supported_market_app_ids, supported_oracle_app_ids, storage_account):
-    """Returns a :class:`TransactionGroup` object representing the initial transactions 
-    executed by the algofi protocol during a standard group transaction. The transactions are 
-    (1) fetch market variables, (2) update prices, (3) update protocol data, and (4) degenerate ("dummy") 
-    transactions to increase the number of cost units allowed (currently each transactions affords 700 
+    """Returns a :class:`TransactionGroup` object representing the initial transactions
+    executed by the algofi protocol during a standard group transaction. The transactions are
+    (1) fetch market variables, (2) update prices, (3) update protocol data, and (4) degenerate ("dummy")
+    transactions to increase the number of cost units allowed (currently each transactions affords 700
     additional cost units).
 
     :param transaction_type: a :class:`Transactions` enum representing the group transaction the init transactions are used for
@@ -36,9 +36,11 @@ def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, su
     suggested_params_modified = deepcopy(suggested_params)
     # if inner transaction is required, increase fee to 2000 microalgos
     if (transaction_type in [Transactions.MINT, Transactions.BURN, Transactions.REMOVE_COLLATERAL,
-                            Transactions.REMOVE_COLLATERAL_UNDERLYING, Transactions.BORROW, Transactions.REPAY_BORROW, Transactions.LIQUIDATE,
+                            Transactions.REMOVE_COLLATERAL_UNDERLYING, Transactions.BORROW, Transactions.REPAY_BORROW,
                             Transactions.CLAIM_REWARDS, Transactions.SEND_GOVERNANCE_TXN, Transactions.SEND_KEYREG_ONLINE_TXN, Transactions.SEND_KEYREG_OFFLINE_TXN]):
         suggested_params_modified.fee = 2000
+    elif transaction_type in [Transactions.LIQUIDATE]:
+        suggested_params_modified.fee = randrange(600_000, 800_000, 1000)
     elif transaction_type in [Transactions.REMOVE_ALGOS_FROM_VAULT]:
         suggested_params_modified.fee = 4000
     # refresh market variables on manager, update prices on manager and update protocol data + add dummy txns to "buy" cost units
@@ -52,7 +54,7 @@ def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, su
     )
     txn1 = ApplicationNoOpTxn(
         sender=sender,
-        sp=suggested_params_modified, 
+        sp=suggested_params_modified,
         index=manager_app_id,
         app_args=[manager_strings.update_prices.encode()],
         foreign_apps=supported_oracle_app_ids
@@ -72,7 +74,7 @@ def get_init_txns(transaction_type, sender, suggested_params, manager_app_id, su
             sender=sender,
             sp=suggested_params,
             index=manager_app_id,
-            app_args=[bytes("dummy_"+dummy_txn_num_to_word[i], 'utf-8')], 
+            app_args=[bytes("dummy_"+dummy_txn_num_to_word[i], 'utf-8')],
             foreign_apps=supported_market_app_ids
         )
         dummy_txns.append(txn)
